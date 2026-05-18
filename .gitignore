@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.luminosity/
+*.iso
+dist/*.zip
