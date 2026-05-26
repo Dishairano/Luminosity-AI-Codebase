@@ -54,6 +54,15 @@ def voer_uit(invoer: str, bevestiging: Bevestiging) -> Uitvoerresultaat:
         return Uitvoerresultaat(False, "De opdracht duurde te lang en is gestopt.")
 
 
+def annuleer(invoer: str, bevestiging: Bevestiging) -> None:
+    """Registreert dat de gebruiker een opdracht heeft geannuleerd (US8).
+
+    Hierdoor verschijnt ook een geannuleerde opdracht in het logboek, zodat de
+    gebruiker kan terugzien dat er bewust niets is uitgevoerd.
+    """
+    logbook.schrijf(invoer, bevestiging.commando, "geannuleerd")
+
+
 def _begrijpelijke_fout(ruwe_fout: str) -> str:
     """Vertaalt een ruwe foutmelding naar begrijpelijke taal met een vervolgstap."""
     fout = ruwe_fout.lower()
