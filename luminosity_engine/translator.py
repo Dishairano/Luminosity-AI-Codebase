@@ -18,6 +18,7 @@ class Vertaling:
     commando: str          # het Linux-commando (leeg als niet herkend)
     uitleg: str            # begrijpelijke uitleg voor de gebruiker
     soort: str             # type opdracht, bv. "installeren"
+    gevaarlijk: bool = False  # vraagt deze opdracht sowieso om een extra bevestiging?
 
 
 # De commando-bibliotheek: elke regel is (trefwoorden, soort, commando-sjabloon, uitleg-sjabloon).
