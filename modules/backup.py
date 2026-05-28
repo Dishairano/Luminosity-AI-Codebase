@@ -23,7 +23,7 @@ class Backupactie:
 
 
 _BACKUP_WOORDEN = ["maak een back-up", "maak back-up", "backup", "back-up maken", "bewaar mijn"]
-_HERSTEL_WOORDEN = ["zet terug", "herstel", "restore", "terugzetten"]
+_HERSTEL_WOORDEN = ["zet terug", "herstel", "restore", "terugzetten", "terug"]
 
 
 def _bevat(tekst, woorden):
