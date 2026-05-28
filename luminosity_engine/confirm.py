@@ -35,6 +35,9 @@ def bouw(vertaling: Vertaling, oordeel: Veiligheidsoordeel) -> Bevestiging:
         "updaten": "Klaar om bij te werken",
         "schijfruimte": "Schijfruimte opvragen",
         "status": "Systeemstatus opvragen",
+        "netwerk": "Netwerk-opdracht klaar",
+        "backup": "Klaar om een back-up te maken",
+        "herstel": "Klaar om een back-up terug te zetten",
     }
     return Bevestiging(
         titel=titels.get(vertaling.soort, "Klaar om uit te voeren"),
@@ -42,5 +45,9 @@ def bouw(vertaling: Vertaling, oordeel: Veiligheidsoordeel) -> Bevestiging:
         uitleg=vertaling.uitleg,
         veiligheidstekst=oordeel.reden,
         mag_uitvoeren=not oordeel.geblokkeerd,
-        extra_waarschuwing=(not oordeel.veilig) and (not oordeel.geblokkeerd),
+        # Extra bevestiging als de veiligheidslaag waarschuwt OF als de opdracht
+        # zelf als gevaarlijk is gemarkeerd (bijv. een back-up terugzetten).
+        extra_waarschuwing=(
+            ((not oordeel.veilig) and (not oordeel.geblokkeerd)) or vertaling.gevaarlijk
+        ),
     )
