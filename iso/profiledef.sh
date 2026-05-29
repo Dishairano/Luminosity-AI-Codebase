@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Luminosity OS - archiso profieldefinitie.
+# Bepaalt de naam, het label en de bestandsrechten van de ISO.
+# shellcheck disable=SC2034
+
+iso_name="luminosity"
+iso_label="LUMINOSITY"
+iso_publisher="Luminosity OS <https://github.com/Dishairano>"
+iso_application="Luminosity OS - Linux in gewone taal"
+iso_version="0.1.0"
+install_dir="lum"
+buildmodes=('iso')
+bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito'
+           'uefi-x64.systemd-boot.esp' 'uefi-x64.systemd-boot.eltorito')
+arch="x86_64"
+pacman_conf="pacman.conf"
+airootfs_image_type="squashfs"
+airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')
+
+# Bestandsrechten: zorg dat onze scripts/configs uitvoerbaar/leesbaar zijn.
+file_permissions=(
+  ["/etc/shadow"]="0:0:400"
+  ["/root"]="0:0:750"
+  ["/root/.config/hypr/hyprland.conf"]="0:0:644"
+  ["/usr/local/bin/luminosity"]="0:0:755"
+)

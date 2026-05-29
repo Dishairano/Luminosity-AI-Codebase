@@ -1,0 +1,29 @@
+# Luminosity OS - pakketlijst voor de bootbare ISO (archiso)
+# Dit bepaalt wat er in het besturingssysteem zit.
+
+# --- Basis ---
+base
+linux
+linux-firmware
+sudo
+networkmanager
+nano
+
+# --- Grafische laag (Wayland + Hyprland) ---
+hyprland
+xdg-desktop-portal-hyprland
+qt6-base
+qt6-declarative
+wayland
+foot
+
+# --- Onze engine draait op Python ---
+python
+
+# --- Hulpmiddelen ---
+git
+rsync
+
+# LET OP: 'quickshell' zit niet in de officiele Arch-repos, maar in de AUR.
+# De build (zie build.sh) bouwt quickshell apart en voegt het toe via een
+# lokale repo, omdat archiso geen AUR-pakketten rechtstreeks kan installeren.
