@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Roept de Luminosity-engine aan vanaf de commandoregel.
+export PYTHONPATH=/opt/luminosity:$PYTHONPATH
+exec python -m luminosity_engine.cli "$@"
