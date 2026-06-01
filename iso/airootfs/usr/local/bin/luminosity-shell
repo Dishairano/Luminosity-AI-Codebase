@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Start de Luminosity-schil. Als quickshell aanwezig is, start de QML-schil;
+# anders valt het systeem terug op een terminal met de engine-CLI, zodat het OS
+# altijd bruikbaar is (eerlijke fallback wanneer quickshell uit de AUR ontbreekt).
+export PYTHONPATH=/opt/luminosity:$PYTHONPATH
+
+if command -v quickshell >/dev/null; then
+    exec quickshell -p /opt/luminosity/luminosity-shell/qml/shell.qml
+fi
+
+echo "quickshell is niet geinstalleerd; terugval op de engine-CLI."
+echo "Typ een opdracht in gewone taal (bijv. 'installeer firefox')."
+exec foot bash -c "cd /opt/luminosity && python -m luminosity_engine.cli"

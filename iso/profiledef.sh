@@ -23,4 +23,5 @@ file_permissions=(
   ["/root"]="0:0:750"
   ["/root/.config/hypr/hyprland.conf"]="0:0:644"
   ["/usr/local/bin/luminosity"]="0:0:755"
+  ["/usr/local/bin/luminosity-shell"]="0:0:755"
 )
