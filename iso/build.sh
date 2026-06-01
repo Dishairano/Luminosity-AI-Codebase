@@ -1,44 +1,80 @@
 #!/usr/bin/env bash
 # Luminosity OS - bouwt de bootbare ISO (OS4).
 #
-# Werkt op een Arch Linux-systeem (of via een Arch-container). De stappen:
-#   1. Kopieer onze engine + schil in het OS (airootfs/opt/luminosity).
-#   2. Bouw quickshell uit de AUR en zet het in een lokale repo.
+# Werkt op een Arch Linux-systeem of in een Arch-container (zie build-docker.sh).
+# Stappen:
+#   1. Kopieer engine + schil + modules in het OS (airootfs/opt/luminosity).
+#   2. Zorg voor een geldige lokale repo (optioneel met quickshell uit de AUR).
 #   3. Roep mkarchiso aan -> resultaat: out/luminosity-*.iso
 #
-# Gebruik (op Arch):   sudo ./build.sh
-# Of via Docker:       zie README.md (archlinux-container).
+# Gebruik (op Arch):                 sudo ./build.sh
+# Met quickshell uit de AUR:         sudo ./build.sh --with-quickshell
+# Via Docker:                        ./build-docker.sh   (zie README.md)
 
 set -euo pipefail
 HIER="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HIER/.." && pwd)"
+REPO=/tmp/luminosity-repo
+MET_QUICKSHELL=0
+[ "${1:-}" = "--with-quickshell" ] && MET_QUICKSHELL=1
 
-echo ">> 1. Engine en schil in het OS plaatsen..."
+echo ">> 1. Engine, schil en modules in het OS plaatsen..."
+rm -rf "$HIER/airootfs/opt/luminosity"
 mkdir -p "$HIER/airootfs/opt/luminosity"
 cp -r "$ROOT/luminosity_engine" "$HIER/airootfs/opt/luminosity/"
 cp -r "$ROOT/luminosity-shell"  "$HIER/airootfs/opt/luminosity/"
-cp -r "$ROOT/modules"           "$HIER/airootfs/opt/luminosity/" 2>/dev/null || true
+cp -r "$ROOT/modules"           "$HIER/airootfs/opt/luminosity/"
+find "$HIER/airootfs/opt/luminosity" -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true
 
-echo ">> 2. quickshell (AUR) bouwen naar lokale repo /tmp/luminosity-repo..."
 if ! command -v mkarchiso >/dev/null; then
-    echo "!! mkarchiso niet gevonden. Installeer 'archiso' of gebruik de Docker-methode (README)." >&2
+    echo "!! mkarchiso niet gevonden. Installeer 'archiso' of gebruik build-docker.sh." >&2
     exit 1
 fi
-mkdir -p /tmp/luminosity-repo
-if [ ! -e /tmp/luminosity-repo/*.pkg.tar.zst ] 2>/dev/null; then
-    # makepkg mag niet als root: bouw als bouw-gebruiker.
-    sudo -u "${SUDO_USER:-nobody}" bash -c '
-        cd /tmp && rm -rf quickshell &&
-        git clone https://aur.archlinux.org/quickshell.git &&
+
+echo ">> 2. Lokale repo voorbereiden ($REPO)..."
+# pacman.conf verwijst naar [luminosity-local]; die repo MOET een geldige db hebben,
+# anders faalt mkarchiso. We maken altijd een (eventueel lege) geldige db aan.
+rm -rf "$REPO" && mkdir -p "$REPO"
+
+if [ "$MET_QUICKSHELL" = "1" ]; then
+    echo ">>    quickshell (AUR) bouwen..."
+    # makepkg mag niet als root: bouw als een onbevoorrechte gebruiker.
+    BOUWER="${SUDO_USER:-builder}"
+    id "$BOUWER" >/dev/null 2>&1 || useradd -m "$BOUWER"
+    install -d -o "$BOUWER" /tmp/qs-build
+    sudo -u "$BOUWER" bash -c '
+        cd /tmp/qs-build && rm -rf quickshell &&
+        git clone --depth=1 https://aur.archlinux.org/quickshell.git &&
         cd quickshell && makepkg -s --noconfirm
-    ' || echo "(quickshell-build overgeslagen; voeg het pakket handmatig toe aan /tmp/luminosity-repo)"
-    cp /tmp/quickshell/*.pkg.tar.zst /tmp/luminosity-repo/ 2>/dev/null || true
-    repo-add /tmp/luminosity-repo/luminosity-local.db.tar.gz /tmp/luminosity-repo/*.pkg.tar.zst 2>/dev/null || true
+    ' && cp /tmp/qs-build/quickshell/*.pkg.tar.zst "$REPO"/ \
+      || echo "(!! quickshell-build mislukt; ISO bouwt door zonder quickshell)"
+fi
+
+# Maak/actualiseer de repo-db (werkt ook als er 0 pakketten zijn).
+shopt -s nullglob
+pkgs=("$REPO"/*.pkg.tar.zst)
+if [ ${#pkgs[@]} -gt 0 ]; then
+    repo-add "$REPO/luminosity-local.db.tar.gz" "${pkgs[@]}" >/dev/null 2>&1 || true
+else
+    # Lege maar geldige db zodat pacman de repo accepteert.
+    tar -cf - --files-from /dev/null | gzip > "$REPO/luminosity-local.db.tar.gz"
+    ln -sf luminosity-local.db.tar.gz "$REPO/luminosity-local.db"
+    cp "$REPO/luminosity-local.db.tar.gz" "$REPO/luminosity-local.files.tar.gz"
+    ln -sf luminosity-local.files.tar.gz "$REPO/luminosity-local.files"
+fi
+shopt -u nullglob
+
+# Voeg quickshell alleen toe aan de pakketlijst als het pakket echt beschikbaar is.
+sed -i '/^quickshell$/d' "$HIER/packages.x86_64"
+if ls "$REPO"/quickshell-*.pkg.tar.zst >/dev/null 2>&1; then
+    echo "quickshell" >> "$HIER/packages.x86_64"
+    echo ">>    quickshell toegevoegd aan de pakketlijst."
 fi
 
 echo ">> 3. ISO bouwen met mkarchiso..."
 rm -rf "$HIER/work" "$HIER/out"
+mkdir -p "$HIER/out"
 mkarchiso -v -w "$HIER/work" -o "$HIER/out" "$HIER"
 
 echo ">> Klaar! De ISO staat in: $HIER/out/"
-ls -lh "$HIER/out/" 2>/dev/null || true
+ls -lh "$HIER/out/"/*.iso 2>/dev/null || true
