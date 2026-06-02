@@ -8,6 +8,16 @@ linux-firmware
 sudo
 networkmanager
 nano
+zsh
+
+# --- Boot / live-ISO (vereist door archiso voor een bootbare ISO) ---
+mkinitcpio
+mkinitcpio-archiso
+mkinitcpio-nfs-utils
+syslinux
+edk2-shell
+intel-ucode
+amd-ucode
 
 # --- Grafische laag (Wayland + Hyprland) ---
 hyprland
