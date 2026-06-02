@@ -72,8 +72,11 @@ if ls "$REPO"/quickshell-*.pkg.tar.zst >/dev/null 2>&1; then
 fi
 
 echo ">> 3. ISO bouwen met mkarchiso..."
-rm -rf "$HIER/work" "$HIER/out"
+# Alleen de work-map en oude ISO's wissen; out/ blijft bestaan zodat een
+# meelopend build-log (build-docker.sh tee't hierheen) niet wordt verwijderd.
+rm -rf "$HIER/work"
 mkdir -p "$HIER/out"
+rm -f "$HIER/out/"*.iso
 mkarchiso -v -w "$HIER/work" -o "$HIER/out" "$HIER"
 
 echo ">> Klaar! De ISO staat in: $HIER/out/"
