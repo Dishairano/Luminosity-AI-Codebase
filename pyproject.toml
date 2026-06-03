@@ -1,0 +1,12 @@
+[project]
+name = "luminosity-os"
+version = "0.1.0"
+description = "Luminosity OS - een Linux-computer besturen in gewone taal"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+# Zorg dat zowel de engine als de modules importeerbaar zijn vanuit de tests,
+# zonder dat het pakket geinstalleerd hoeft te worden.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
