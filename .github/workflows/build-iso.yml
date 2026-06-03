@@ -1,0 +1,68 @@
+name: Build Luminosity ISO
+
+# Bouwt de bootbare ISO (OS4) in een Arch Linux-container op een GitHub-runner.
+# mkarchiso heeft loop-devices/mount nodig, dus de job draait --privileged.
+#
+# - push/PR: bouwt de ISO en bewaart hem als build-artifact.
+# - tag v*:  bouwt de ISO en hangt hem aan een GitHub Release.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      with_quickshell:
+        description: "quickshell uit de AUR meebouwen (langzamer)"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installeer build-afhankelijkheden (archiso)
+        run: pacman -Sy --noconfirm --needed archiso git base-devel sudo
+
+      - name: Bouw de ISO
+        run: |
+          cd iso
+          if [ "${{ github.event.inputs.with_quickshell }}" = "true" ]; then
+            ./build.sh --with-quickshell
+          else
+            ./build.sh
+          fi
+
+      - name: Toon resultaat
+        run: ls -lh iso/out/
+
+      - name: Upload ISO als artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: luminosity-iso
+          path: iso/out/*.iso
+          if-no-files-found: error
+
+      - name: Upload build-log als artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: iso/out/build.log
+          if-no-files-found: ignore
+
+      - name: Hang ISO aan de Release (alleen bij een tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: iso/out/*.iso
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
