@@ -1,0 +1,28 @@
+name: Tests
+
+# Draait de pytest-suite (engine, modules, integratie, schil-CLI) met coverage.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python opzetten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installeer testtools
+        run: pip install pytest pytest-cov
+
+      - name: Tests + coverage
+        run: pytest --cov=luminosity_engine --cov=modules --cov-report=term-missing
