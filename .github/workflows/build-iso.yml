@@ -19,6 +19,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: write   # nodig om de ISO aan een GitHub Release te hangen
+
 jobs:
   build:
     runs-on: ubuntu-latest
