@@ -33,7 +33,13 @@ for ovmf in /usr/share/edk2/x64/OVMF_CODE.4m.fd /usr/share/OVMF/OVMF_CODE.fd; do
     [ -f "$ovmf" ] && { ARGS+=(-drive "if=pflash,format=raw,readonly=on,file=$ovmf"); break; }
 done
 if [ "${HEADLESS:-0}" = "1" ]; then
+    # Geen venster: serie-console (de grafische schil is dan niet zichtbaar).
     ARGS+=(-nographic -serial mon:stdio)
+else
+    # Hyprland is een Wayland-compositor en heeft een virtuele GPU met GL nodig,
+    # anders blijft het scherm zwart. virtio-vga-gl + GTK-display met OpenGL
+    # zorgt voor 3D-versnelling zodat de schil rendert.
+    ARGS+=(-device virtio-vga-gl -display gtk,gl=on)
 fi
 
 set -x
