@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luminosity Setup</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="setup">
+  <!-- Linker rail -->
+  <aside class="rail">
+    <div class="brand">
+      <!-- Lumo, de mascotte -->
+      <span class="brand-mascot" id="brand-mascot"></span>
+      <div>Luminosity<span> OS</span><small>Setup</small></div>
+    </div>
+    <ol class="steps" id="steps">
+      <li data-step="0"><span class="dot">1</span> Welkom</li>
+      <li data-step="1"><span class="dot">2</span> Licentie</li>
+      <li data-step="2"><span class="dot">3</span> Schijf</li>
+      <li data-step="3"><span class="dot">4</span> Indeling</li>
+      <li data-step="4"><span class="dot">5</span> Account</li>
+      <li data-step="5"><span class="dot">6</span> Regio</li>
+      <li data-step="6"><span class="dot">7</span> Stijl</li>
+      <li data-step="7"><span class="dot">8</span> Overzicht</li>
+      <li data-step="8"><span class="dot">9</span> Installeren</li>
+      <li data-step="9"><span class="dot">✓</span> Klaar</li>
+    </ol>
+    <div class="rail-foot">
+      <span id="mode-badge" class="mode-badge">demo</span>
+      Lokaal &amp; offline · geen cloud-account nodig
+    </div>
+  </aside>
+
+  <!-- Inhoud -->
+  <section class="content">
+    <div class="pane">
+
+      <!-- 0 Welkom -->
+      <div class="step show" data-step="0">
+        <div class="mascot-hero" id="mascot-hero"></div>
+        <h1>Hoi, ik ben <span class="accent">Lumo</span>.</h1>
+        <p class="sub">Ik help je Luminosity OS installeren — een computer die je in gewone taal bedient. Kies eerst je taal.</p>
+        <div class="choices">
+          <div class="choice sel" data-pick="lang" data-value="nl"><div class="ic">🇳🇱</div><div><div class="t">Nederlands</div><div class="d">Aanbevolen</div></div><div class="chk">✓</div></div>
+          <div class="choice" data-pick="lang" data-value="en"><div class="ic">🇬🇧</div><div><div class="t">English</div><div class="d">English (US)</div></div><div class="chk">✓</div></div>
+        </div>
+      </div>
+
+      <!-- 1 Licentie -->
+      <div class="step" data-step="1">
+        <span class="pill">100% offline</span>
+        <h1>Voorwaarden &amp; privacy</h1>
+        <p class="sub">Luminosity is vrije software. Belangrijk om te weten:</p>
+        <ul class="clean">
+          <li>De taal-engine werkt <strong>volledig lokaal</strong> — geen internet, geen cloud-AI, geen API-sleutel.</li>
+          <li>Er wordt <strong>niets</strong> over je verstuurd. Je gegevens blijven op je computer.</li>
+          <li>Elke actie wordt eerst uitgelegd en je moet bevestigen vóór er iets gebeurt.</li>
+        </ul>
+        <div class="toggle"><div class="switch" id="accept"></div><label>Ik ga akkoord met de voorwaarden</label></div>
+      </div>
+
+      <!-- 2 Schijf -->
+      <div class="step" data-step="2">
+        <h1>Waar installeren?</h1>
+        <p class="sub">Kies de schijf voor Luminosity. <strong>Let op:</strong> bij "hele schijf" wordt deze gewist.</p>
+        <div class="choices" id="disk-choices"><!-- gevuld door JS --></div>
+        <p class="warn">⚠ Controleer goed welke schijf je kiest — verwijderde gegevens zijn niet terug te halen.</p>
+      </div>
+
+      <!-- 3 Indeling -->
+      <div class="step" data-step="3">
+        <h1>Schijf-indeling</h1>
+        <p class="sub">Hoe wil je de gekozen schijf indelen?</p>
+        <div class="choices">
+          <div class="choice sel" data-pick="layout" data-value="whole">
+            <div class="ic">🧹</div>
+            <div><div class="t">Hele schijf gebruiken</div><div class="d">Wis alles en laat Luminosity de indeling maken (aanbevolen)</div></div>
+            <div class="chk">✓</div>
+          </div>
+          <div class="choice" data-pick="layout" data-value="manual">
+            <div class="ic">🧩</div>
+            <div><div class="t">Handmatig (gevorderd)</div><div class="d">Ik regel partities zelf in een terminal vóór de installatie</div></div>
+            <div class="chk">✓</div>
+          </div>
+        </div>
+        <!-- Visuele indeling -->
+        <div class="layout-viz" id="layout-viz">
+          <div class="seg seg-efi" style="flex:0 0 8%"><span>EFI<br>512 MB</span></div>
+          <div class="seg seg-root" style="flex:1"><span>Luminosity (root)<br><b id="viz-root">—</b></span></div>
+        </div>
+      </div>
+
+      <!-- 4 Account -->
+      <div class="step" data-step="4">
+        <h1>Maak je account</h1>
+        <p class="sub">Dit account gebruik je om in te loggen op Luminosity.</p>
+        <div class="field"><label>Je naam</label><input class="input" id="fullname" placeholder="Bijv. Kenji"></div>
+        <div class="row">
+          <div class="field"><label>Gebruikersnaam</label><input class="input" id="username" placeholder="kenji"></div>
+          <div class="field"><label>Computernaam</label><input class="input" id="hostname" value="luminosity-pc"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Wachtwoord</label><input class="input" type="password" id="pw" placeholder="••••••••"></div>
+          <div class="field"><label>Herhaal wachtwoord</label><input class="input" type="password" id="pw2" placeholder="••••••••"></div>
+        </div>
+        <p class="warn" id="pw-warn" style="display:none">De wachtwoorden komen niet overeen.</p>
+      </div>
+
+      <!-- 5 Regio -->
+      <div class="step" data-step="5">
+        <h1>Regio &amp; toetsenbord</h1>
+        <p class="sub">Voor de tijd, taal van het systeem en je toetsenbordindeling.</p>
+        <div class="row">
+          <div class="field"><label>Tijdzone</label>
+            <select class="input" id="tz"><option>Europe/Amsterdam</option><option>Europe/Brussels</option><option>UTC</option></select></div>
+          <div class="field"><label>Toetsenbord</label>
+            <select class="input" id="kb"><option value="be">Belgisch (AZERTY)</option><option value="us">VS (QWERTY)</option><option value="nl">Nederlands</option></select></div>
+        </div>
+        <div class="toggle"><div class="switch on" id="updates"></div><label>Systeem bijwerken na installatie</label></div>
+      </div>
+
+      <!-- 6 Stijl -->
+      <div class="step" data-step="6">
+        <h1>Kies je stijl</h1>
+        <p class="sub">Pick een accentkleur. Je ziet 'm meteen terug in deze installer.</p>
+        <div class="swatches" id="swatches">
+          <button class="swatch sel" data-accent="#ffd166" style="--c:#ffd166" title="Zon (goud)"></button>
+          <button class="swatch" data-accent="#8ad0ff" style="--c:#8ad0ff" title="Hemel"></button>
+          <button class="swatch" data-accent="#5bd17a" style="--c:#5bd17a" title="Mos"></button>
+          <button class="swatch" data-accent="#ff8db4" style="--c:#ff8db4" title="Bloesem"></button>
+          <button class="swatch" data-accent="#b89cff" style="--c:#b89cff" title="Lavendel"></button>
+          <button class="swatch" data-accent="#ff8f5e" style="--c:#ff8f5e" title="Terracotta"></button>
+        </div>
+        <div class="toggle"><div class="switch on" id="darkmode"></div><label>Donkere modus</label></div>
+      </div>
+
+      <!-- 7 Overzicht -->
+      <div class="step" data-step="7">
+        <h1>Klaar om te installeren</h1>
+        <p class="sub">Controleer je keuzes. Hierna begint de installatie.</p>
+        <ul class="clean" id="summary">
+          <li>Taal: <strong id="s-lang">Nederlands</strong></li>
+          <li>Schijf: <strong id="s-disk">—</strong> · <strong id="s-layout">hele schijf</strong></li>
+          <li>Gebruiker: <strong id="s-user">—</strong> op <strong id="s-host">luminosity-pc</strong></li>
+          <li>Regio: <strong id="s-tz">Europe/Amsterdam</strong> · <strong id="s-kb">Belgisch (AZERTY)</strong></li>
+          <li>Accent: <strong id="s-accent">Zon</strong></li>
+          <li>Bevat: Hyprland · Quickshell-schil · offline taal-engine</li>
+        </ul>
+      </div>
+
+      <!-- 8 Installeren -->
+      <div class="step" data-step="8">
+        <div class="installing">
+          <h1>Luminosity wordt geïnstalleerd…</h1>
+          <p class="sub center">Lumo is aan het werk. Dit gaat over jou — niet over een account ergens in de cloud.</p>
+          <div class="install-mascot" id="install-mascot"></div>
+          <div class="ring" id="ring"><b id="ringpct">0%</b></div>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+
+      <!-- 9 Klaar -->
+      <div class="step" data-step="9">
+        <div class="center">
+          <div class="done-mascot" id="done-mascot"></div>
+          <h1>Klaar! Welkom bij Luminosity.</h1>
+          <p class="sub" style="margin-inline:auto">Je computer is geïnstalleerd. Na het herstarten typ je gewoon wat je wilt doen.</p>
+          <button class="btn btn-primary" id="btn-restart">Nu herstarten</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <div class="progress-dots" id="dots"></div>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" id="back">Terug</button>
+        <button class="btn btn-primary" id="next">Volgende</button>
+      </div>
+    </div>
+  </section>
+</div>
+<script src="assets/installer.js"></script>
+</body>
+</html>
