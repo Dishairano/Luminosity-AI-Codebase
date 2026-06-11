@@ -24,7 +24,11 @@ mkdir -p "$HIER/airootfs/opt/luminosity"
 cp -r "$ROOT/luminosity_engine" "$HIER/airootfs/opt/luminosity/"
 cp -r "$ROOT/luminosity-shell"  "$HIER/airootfs/opt/luminosity/"
 cp -r "$ROOT/modules"           "$HIER/airootfs/opt/luminosity/"
-find "$HIER/airootfs/opt/luminosity" -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true
+# De grafische installer (kiosk + server + install-script) in het live-OS plaatsen.
+rm -rf "$HIER/airootfs/opt/luminosity-installer"
+cp -r "$HIER/installer" "$HIER/airootfs/opt/luminosity-installer"
+find "$HIER/airootfs/opt/luminosity" "$HIER/airootfs/opt/luminosity-installer" \
+    -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true
 
 if ! command -v mkarchiso >/dev/null; then
     echo "!! mkarchiso niet gevonden. Installeer 'archiso' of gebruik build-docker.sh." >&2

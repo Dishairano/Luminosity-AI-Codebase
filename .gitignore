@@ -11,3 +11,4 @@ htmlcov/
 # ISO-build-artefacten (gegenereerd door iso/build.sh)
 iso/work/
 iso/airootfs/opt/luminosity/
+iso/airootfs/opt/luminosity-installer/

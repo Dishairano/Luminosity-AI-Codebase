@@ -34,6 +34,13 @@ python
 git
 rsync
 
+# --- Grafische installer (kiosk-browser + installatiegereedschap) ---
+chromium
+gptfdisk
+dosfstools
+parted
+arch-install-scripts
+
 # LET OP: 'quickshell' zit niet in de officiele Arch-repos, maar in de AUR.
 # De build (zie build.sh) bouwt quickshell apart en voegt het toe via een
 # lokale repo, omdat archiso geen AUR-pakketten rechtstreeks kan installeren.

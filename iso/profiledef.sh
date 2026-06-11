@@ -23,4 +23,7 @@ file_permissions=(
   ["/root/.config/hypr/hyprland.conf"]="0:0:644"
   ["/usr/local/bin/luminosity"]="0:0:755"
   ["/usr/local/bin/luminosity-shell"]="0:0:755"
+  ["/opt/luminosity-installer/launch-installer.sh"]="0:0:755"
+  ["/opt/luminosity-installer/server.py"]="0:0:755"
+  ["/opt/luminosity-installer/install.sh"]="0:0:755"
 )
