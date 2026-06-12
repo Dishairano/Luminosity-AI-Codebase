@@ -1,0 +1,16 @@
+[Unit]
+Description=Luminosity Installer Server
+After=multi-user.target
+
+[Service]
+Type=exec
+Environment=PYTHONPATH=/opt/luminosity
+# Markeringen naar de seriële poort, zodat een headless QEMU-boottest in CI kan
+# bevestigen dat de live-omgeving + de installer-backend daadwerkelijk opkomen.
+ExecStartPre=/bin/sh -c 'echo LUMINOSITY_INSTALLER_STARTING > /dev/ttyS0 2>/dev/null || true'
+ExecStart=/usr/bin/python3 /opt/luminosity-installer/server.py
+ExecStartPost=/bin/sh -c 'echo LUMINOSITY_INSTALLER_UP > /dev/ttyS0 2>/dev/null || true'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
