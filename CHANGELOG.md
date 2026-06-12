@@ -4,6 +4,33 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.0] — 2026-06-09 — "Luminosity OS Installer"
+
+De live-ISO boot nu in een grafische installer in plaats van direct in de schil.
+
+### Toegevoegd
+- **Grafische installer** (`iso/installer/`): een kiosk-webinterface met de
+  mascotte "Lumo", stappen voor taal, licentie, schijf, schijf-indeling,
+  account, regio, stijl (live accentkleur + donkere/lichte modus), overzicht en
+  een geanimeerde installatievoortgang.
+- **Lokale install-server** (`server.py`): serveert de UI en biedt `/api/disks`,
+  `/api/install` (streamt voortgang via Server-Sent Events) en `/api/reboot`.
+- **Arch-installatiescript** (`install.sh`): partitioneren → pacstrap →
+  chroot-configuratie (account, tijdzone, locale, autostart) → systemd-boot →
+  Luminosity-engine/schil plaatsen op het doelsysteem.
+- **Kiosk-autostart**: de live-ISO start de installer fullscreen (Chromium op
+  Hyprland); `SUPER+L` om de schil te proberen, `SUPER+RETURN` voor een terminal.
+
+### Gewijzigd
+- ISO-pakketten uitgebreid met `chromium`, `gptfdisk`, `dosfstools`, `parted`,
+  `arch-install-scripts`.
+- QEMU-testscript gebruikt `virtio-vga-gl` zodat Hyprland (Wayland) rendert.
+- ISO-builds verlopen voortaan via GitHub Actions, met release op een versietag.
+
+### Bekende beperkingen
+- `install.sh` is niet op echte hardware uitgevoerd (geen doel-schijf/boot in de
+  ontwikkelomgeving); test in een VM met een lege schijf.
+
 ## [0.1.0] — 2026-06-09 — "Luminosity OS Alpha"
 
 Eerste alpha: een werkende offline taal-engine, een Quickshell-schil en een
