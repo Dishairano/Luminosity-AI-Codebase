@@ -69,3 +69,51 @@ jobs:
           files: iso/out/*.iso
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Boot de gebouwde ISO headless in QEMU en bevestig dat de live-omgeving +
+  # installer-backend opkomen (de service schrijft een markering naar de seriële
+  # poort). Geen GPU nodig: de server draait via systemd, losgekoppeld van de schil.
+  boot-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download de gebouwde ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: luminosity-iso
+          path: iso-out
+
+      - name: Installeer QEMU
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-system-x86 ovmf
+
+      - name: Headless boot-smoketest
+        run: |
+          ISO="$(ls iso-out/*.iso | head -1)"
+          echo "Boot $ISO in QEMU (headless)…"
+          ACCEL=tcg; [ -e /dev/kvm ] && ACCEL=kvm
+          echo "Versnelling: $ACCEL"
+          qemu-system-x86_64 \
+            -machine accel=$ACCEL -cpu max -m 3072 -smp 2 \
+            -cdrom "$ISO" -boot d -no-reboot \
+            -display none -serial file:serial.log &
+          QPID=$!
+          ok=0
+          for i in $(seq 1 150); do            # ~12,5 min (TCG-boot is traag)
+            if grep -q "LUMINOSITY_INSTALLER_UP" serial.log 2>/dev/null; then
+              echo "✓ Live-ISO geboot en installer-service is opgekomen."; ok=1; break
+            fi
+            kill -0 $QPID 2>/dev/null || { echo "QEMU is gestopt."; break; }
+            sleep 5
+          done
+          kill $QPID 2>/dev/null || true
+          echo "----- laatste seriële output -----"
+          tail -n 50 serial.log 2>/dev/null || echo "(geen seriële output)"
+          [ "$ok" = "1" ] || { echo "✗ Boot-markering niet gezien binnen de tijdslimiet."; exit 1; }
+
+      - name: Bewaar de seriële log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-serial-log
+          path: serial.log
+          if-no-files-found: ignore
