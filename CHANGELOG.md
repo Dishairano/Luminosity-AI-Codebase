@@ -4,6 +4,20 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.1] — 2026-06-09
+
+### Toegevoegd
+- **Geautomatiseerde boot-test in CI**: de GitHub Actions-workflow boot elke
+  gebouwde ISO headless in QEMU en bevestigt dat de live-omgeving en de
+  installer-backend opkomen (markering via de seriële poort). De seriële log
+  wordt als artifact bewaard.
+
+### Gewijzigd
+- De installer-server draait nu als **systemd-service**
+  (`luminosity-installer.service`), losgekoppeld van de Hyprland-schil — robuuster
+  en headless testbaar. De kiosk-launcher opent alleen nog de browser (met
+  fallback als de service nog niet luistert).
+
 ## [0.2.0] — 2026-06-09 — "Luminosity OS Installer"
 
 De live-ISO boot nu in een grafische installer in plaats van direct in de schil.
