@@ -1,0 +1,90 @@
+name: VM tryout (screenshots)
+
+# Boot de uitgebrachte ISO in een echte VM (KVM) op een GitHub-runner, laat hem
+# in de grafische installer opstarten, en maak met tussenpozen schermafbeeldingen
+# van het werkelijke scherm. Puur observatie — niet gekoppeld aan de release.
+#
+# Handmatig starten: Actions -> "VM tryout (screenshots)" -> Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release-tag om te proberen"
+        type: string
+        default: "v0.2.1"
+
+permissions:
+  contents: read
+
+jobs:
+  tryout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gereedschap installeren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qemu-system-x86 ovmf socat imagemagick \
+            libgl1-mesa-dri libegl1 libgles2 mesa-vulkan-drivers
+
+      - name: KVM toegankelijk maken
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm || true
+
+      - name: Download de uitgebrachte ISO
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download "${{ inputs.tag }}" -R "$GITHUB_REPOSITORY" -p '*.iso' -D iso
+          ls -lh iso/
+
+      - name: VM booten en screenshots maken
+        run: |
+          ISO="$(ls iso/*.iso | head -1)"
+          mkdir -p shots
+          qemu-img create -f qcow2 blank.qcow2 20G
+          ACCEL=tcg; [ -w /dev/kvm ] && ACCEL=kvm
+          echo "Versnelling: $ACCEL"
+          : > serial.log
+          # virtio-gpu (DRM) zodat Hyprland kan renderen; egl-headless rendert via
+          # software-GL op de runner. Monitor-socket voor screendump.
+          qemu-system-x86_64 \
+            -machine accel=$ACCEL -cpu max -m 4096 -smp 2 \
+            -cdrom "$ISO" -boot d \
+            -drive file=blank.qcow2,if=virtio,format=qcow2 \
+            -device virtio-vga-gl -display egl-headless \
+            -serial file:serial.log \
+            -monitor unix:/tmp/mon.sock,server,nowait \
+            -no-reboot & QPID=$!
+
+          shot() { printf 'screendump %s\n' "$1" | socat - unix-connect:/tmp/mon.sock 2>/dev/null || true; }
+
+          installer_up=0
+          for t in 30 60 90 120 150 180 210 240; do
+            sleep 30
+            kill -0 $QPID 2>/dev/null || { echo "QEMU gestopt na ~${t}s"; break; }
+            shot "shots/shot_${t}s.ppm"
+            grep -q LUMINOSITY_INSTALLER_UP serial.log 2>/dev/null && installer_up=1
+            echo "t=${t}s  installer_up=${installer_up}  shot=$( [ -s shots/shot_${t}s.ppm ] && echo ok || echo leeg )"
+          done
+          kill $QPID 2>/dev/null || true
+
+          echo "----- seriële output (staart) -----"; tail -n 60 serial.log || true
+          # PPM -> PNG
+          for f in shots/*.ppm; do [ -s "$f" ] && convert "$f" "${f%.ppm}.png" 2>/dev/null || true; done
+          ls -l shots/ || true
+          echo "installer_up=$installer_up"
+
+      - name: Screenshots bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-screenshots
+          path: |
+            shots/*.png
+            serial.log
+          if-no-files-found: warn
