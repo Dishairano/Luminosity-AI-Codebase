@@ -62,14 +62,6 @@ jobs:
           path: iso/out/build.log
           if-no-files-found: ignore
 
-      - name: Hang ISO aan de Release (alleen bij een tag)
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: iso/out/*.iso
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   # Boot de gebouwde ISO headless in QEMU en bevestig dat de live-omgeving +
   # installer-backend opkomen (de service schrijft een markering naar de seriële
   # poort). Geen GPU nodig: de server draait via systemd, losgekoppeld van de schil.
@@ -117,3 +109,25 @@ jobs:
           name: boot-serial-log
           path: serial.log
           if-no-files-found: ignore
+
+  # Hangt de ISO aan een GitHub Release — alleen bij een tag, en alleen als de
+  # boot-test slaagde. Draait op de host (niet in een container), zodat
+  # GITHUB_TOKEN-auth betrouwbaar werkt (de container-variant gaf een 401).
+  release:
+    needs: [build, boot-test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download de gebouwde ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: luminosity-iso
+          path: iso-out
+
+      - name: Publiceer de release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: iso-out/*.iso
+          fail_on_unmatched_files: true
