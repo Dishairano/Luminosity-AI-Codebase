@@ -78,29 +78,52 @@ jobs:
       - name: Installeer QEMU
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-system-x86 ovmf
 
+      - name: KVM toegankelijk maken (GitHub-runner)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm || true
+
       - name: Headless boot-smoketest
         run: |
           ISO="$(ls iso-out/*.iso | head -1)"
           echo "Boot $ISO in QEMU (headless)…"
-          ACCEL=tcg; [ -e /dev/kvm ] && ACCEL=kvm
-          echo "Versnelling: $ACCEL"
-          qemu-system-x86_64 \
-            -machine accel=$ACCEL -cpu max -m 3072 -smp 2 \
-            -cdrom "$ISO" -boot d -no-reboot \
-            -display none -serial file:serial.log &
-          QPID=$!
+
+          boot() {  # $1 = accel; start QEMU, wacht op de markering
+            local accel="$1"
+            echo "→ poging met versnelling: $accel"
+            : > serial.log
+            qemu-system-x86_64 \
+              -machine accel=$accel -cpu max -m 3072 -smp 2 \
+              -cdrom "$ISO" -boot d -no-reboot \
+              -display none -serial file:serial.log &
+            local qpid=$! n="$2"
+            for _ in $(seq 1 "$n"); do
+              grep -q "LUMINOSITY_INSTALLER_UP" serial.log 2>/dev/null && { kill $qpid 2>/dev/null; return 0; }
+              kill -0 $qpid 2>/dev/null || { echo "  QEMU stopte (accel=$accel)."; return 2; }
+              sleep 5
+            done
+            kill $qpid 2>/dev/null
+            return 1
+          }
+
           ok=0
-          for i in $(seq 1 150); do            # ~12,5 min (TCG-boot is traag)
-            if grep -q "LUMINOSITY_INSTALLER_UP" serial.log 2>/dev/null; then
-              echo "✓ Live-ISO geboot en installer-service is opgekomen."; ok=1; break
-            fi
-            kill -0 $QPID 2>/dev/null || { echo "QEMU is gestopt."; break; }
-            sleep 5
-          done
-          kill $QPID 2>/dev/null || true
+          # Probeer eerst KVM (snel). Faalt dat meteen (permissie), val terug op TCG.
+          if [ -w /dev/kvm ]; then
+            boot kvm 120 && ok=1
+          fi
+          if [ "$ok" != "1" ]; then
+            boot tcg 180 && ok=1     # software-emulatie: traag maar altijd beschikbaar
+          fi
+
           echo "----- laatste seriële output -----"
-          tail -n 50 serial.log 2>/dev/null || echo "(geen seriële output)"
-          [ "$ok" = "1" ] || { echo "✗ Boot-markering niet gezien binnen de tijdslimiet."; exit 1; }
+          tail -n 60 serial.log 2>/dev/null || echo "(geen seriële output)"
+          if [ "$ok" = "1" ]; then
+            echo "✓ Live-ISO geboot en installer-service is opgekomen."
+          else
+            echo "✗ Boot-markering niet gezien."; exit 1
+          fi
 
       - name: Bewaar de seriële log
         if: always()
