@@ -50,13 +50,14 @@ jobs:
           ACCEL=tcg; [ -w /dev/kvm ] && ACCEL=kvm
           echo "Versnelling: $ACCEL"
           : > serial.log
-          # virtio-gpu (DRM) zodat Hyprland kan renderen; egl-headless rendert via
-          # software-GL op de runner. Monitor-socket voor screendump.
+          # virtio-vga geeft de gast een DRM-apparaat zonder host-GPU; een VNC-
+          # display heeft geen host-GL nodig en houdt een framebuffer aan voor
+          # screendump. Monitor-socket voor screendump.
           qemu-system-x86_64 \
             -machine accel=$ACCEL -cpu max -m 4096 -smp 2 \
             -cdrom "$ISO" -boot d \
             -drive file=blank.qcow2,if=virtio,format=qcow2 \
-            -device virtio-vga-gl -display egl-headless \
+            -device virtio-vga -display vnc=127.0.0.1:0 \
             -serial file:serial.log \
             -monitor unix:/tmp/mon.sock,server,nowait \
             -no-reboot & QPID=$!
