@@ -25,8 +25,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            qemu-system-x86 qemu-utils ovmf socat imagemagick \
-            libgl1-mesa-dri libegl1 libgles2 mesa-vulkan-drivers
+            qemu-system-x86 qemu-utils qemu-system-modules-opengl ovmf socat imagemagick \
+            libgl1-mesa-dri libegl1 libgles2 libglx-mesa0 mesa-vulkan-drivers
 
       - name: KVM toegankelijk maken
         run: |
@@ -60,6 +60,11 @@ jobs:
             -serial file:serial.log \
             -monitor unix:/tmp/mon.sock,server,nowait \
             -no-reboot & QPID=$!
+
+          sleep 8
+          if ! kill -0 $QPID 2>/dev/null; then
+            echo "✗ QEMU startte niet (zie fout hierboven)."; exit 1
+          fi
 
           shot() { printf 'screendump %s\n' "$1" | socat - unix-connect:/tmp/mon.sock 2>/dev/null || true; }
 
