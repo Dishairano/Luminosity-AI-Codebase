@@ -4,6 +4,16 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.2] — 2026-06-10
+
+### Gewijzigd
+- **Werkt nu zonder dedicated GPU / met software-rendering.** De schil (Hyprland)
+  staat Mesa's software-GL (llvmpipe) toe als er geen werkende hardware-GL is
+  (`WLR_RENDERER_ALLOW_SOFTWARE=1`), zodat de grafische installer/schil ook op
+  integrated graphics, zwakke of GPU-loze systemen en in VM's opstart in plaats
+  van een zwart scherm. Hardware-GL wordt nog steeds gebruikt indien beschikbaar.
+  `WLR_NO_HARDWARE_CURSORS=1` voorkomt cursorproblemen in VM's.
+
 ## [0.2.1] — 2026-06-09
 
 ### Toegevoegd
