@@ -143,6 +143,8 @@ EOF
 cat >> /home/$USERNAME/.zprofile <<EOF
 if [ -z "\\\$WAYLAND_DISPLAY" ] && [ "\\\$(tty)" = "/dev/tty1" ]; then
     export PYTHONPATH=/opt/luminosity:\\\$PYTHONPATH
+    export WLR_RENDERER_ALLOW_SOFTWARE=1
+    export WLR_NO_HARDWARE_CURSORS=1
     exec Hyprland
 fi
 EOF
