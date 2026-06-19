@@ -4,6 +4,18 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.3] — 2026-06-10
+
+### Opgelost
+- **Zwart scherm bij het opstarten verholpen.** De grafische sessie draaide als
+  root, en Hyprland (en Chromium) weigeren als root te starten — vandaar het
+  zwarte scherm. De live-ISO logt nu automatisch in als onbevoorrechte gebruiker
+  `lumo` en start de schil als die gebruiker. De installatie zelf houdt
+  root-rechten via `luminosity-installer.service` (nette scheiding van rechten).
+- De CI-boottest verifieert nu expliciet dat de schil **opkomt** (markering
+  `LUMINOSITY_GUI_UP` via de seriële poort) en faalt met de reden als Hyprland
+  stopt — zodat een release alleen uitgaat als de GUI daadwerkelijk start.
+
 ## [0.2.2] — 2026-06-10
 
 ### Gewijzigd
