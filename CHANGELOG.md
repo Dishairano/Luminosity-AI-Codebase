@@ -4,6 +4,15 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.4] — 2026-06-10
+
+### Gewijzigd
+- **De ISO start direct door naar Luminosity** — geen 15 seconden-bootmenu meer.
+  Zowel syslinux (BIOS) als systemd-boot (UEFI) en grub starten nu meteen de
+  standaard-optie (timeout ~0).
+- Het bootmenu en de boot-opties heten nu **"Luminosity OS"** in plaats van
+  "Arch Linux install medium".
+
 ## [0.2.3] — 2026-06-10
 
 ### Opgelost
