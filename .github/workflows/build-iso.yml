@@ -90,17 +90,23 @@ jobs:
           ISO="$(ls iso-out/*.iso | head -1)"
           echo "Boot $ISO in QEMU (headless)…"
 
-          boot() {  # $1 = accel; start QEMU, wacht op de markering
+          # Slaagt pas als de grafische schil (Hyprland) is opgekomen — bewezen
+          # door LUMINOSITY_GUI_UP (de kiosk-launcher draait alleen ná de compositor).
+          # Faalt direct als Hyprland stopte (LUMINOSITY_HYPR_EXITED, met reden).
+          # virtio-vga geeft de gast een DRM-apparaat; rendering valt terug op
+          # software-GL (llvmpipe) — dus dit verifieert "werkt zonder GPU".
+          boot() {  # $1 = accel, $2 = aantal iteraties
             local accel="$1"
             echo "→ poging met versnelling: $accel"
             : > serial.log
             qemu-system-x86_64 \
-              -machine accel=$accel -cpu max -m 3072 -smp 2 \
+              -machine accel=$accel -cpu max -m 4096 -smp 2 \
               -cdrom "$ISO" -boot d -no-reboot \
-              -display none -serial file:serial.log &
+              -device virtio-vga -display none -serial file:serial.log &
             local qpid=$! n="$2"
             for _ in $(seq 1 "$n"); do
-              grep -q "LUMINOSITY_INSTALLER_UP" serial.log 2>/dev/null && { kill $qpid 2>/dev/null; return 0; }
+              grep -q "LUMINOSITY_GUI_UP" serial.log 2>/dev/null && { kill $qpid 2>/dev/null; return 0; }
+              grep -q "LUMINOSITY_HYPR_EXITED" serial.log 2>/dev/null && { echo "  Hyprland stopte:"; grep LUMINOSITY_HYPR_EXITED serial.log; kill $qpid 2>/dev/null; return 3; }
               kill -0 $qpid 2>/dev/null || { echo "  QEMU stopte (accel=$accel)."; return 2; }
               sleep 5
             done
@@ -120,7 +126,7 @@ jobs:
           echo "----- laatste seriële output -----"
           tail -n 60 serial.log 2>/dev/null || echo "(geen seriële output)"
           if [ "$ok" = "1" ]; then
-            echo "✓ Live-ISO geboot en installer-service is opgekomen."
+            echo "✓ Live-ISO geboot én de grafische schil (Hyprland) is opgekomen — zonder GPU."
           else
             echo "✗ Boot-markering niet gezien."; exit 1
           fi

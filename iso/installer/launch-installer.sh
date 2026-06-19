@@ -9,6 +9,11 @@ HIER="$(cd "$(dirname "$0")" && pwd)"
 PORT="${LUM_INSTALLER_PORT:-8723}"
 export PYTHONPATH=/opt/luminosity:${PYTHONPATH:-}
 
+# Dit script wordt alleen door Hyprland (exec-once) gestart; dat het draait
+# bewijst dat de compositor is opgekomen — ook zonder GPU (software-GL).
+# Markering naar de seriële poort voor een VM-/CI-boottest.
+echo "LUMINOSITY_GUI_UP" > /dev/ttyS0 2>/dev/null || true
+
 # Fallback: start de server zelf als de systemd-service (nog) niet luistert.
 if ! (exec 3<>"/dev/tcp/127.0.0.1/$PORT") 2>/dev/null; then
     python3 "$HIER/server.py" &
