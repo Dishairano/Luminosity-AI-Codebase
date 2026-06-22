@@ -5,6 +5,10 @@ systemctl enable NetworkManager.service
 systemctl enable getty@tty1.service
 systemctl enable luminosity-installer.service
 
+# Boot-splash: zet ons Plymouth-thema als standaard (de initramfs-bouw verderop
+# bundelt daardoor het 'luminosity'-thema + de script-plugin).
+plymouth-set-default-theme luminosity
+
 # Onbevoorrechte live-gebruiker voor de grafische sessie. Hyprland en Chromium
 # weigeren als root te draaien; de installatie zelf draait als root via de
 # luminosity-installer.service. Groepen video/input voor GPU/invoer, uucp/tty

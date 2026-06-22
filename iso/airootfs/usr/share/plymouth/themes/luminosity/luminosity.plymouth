@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Luminosity
+Description=Luminosity OS boot-splash (Grote zonsopkomst)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/luminosity
+ScriptFile=/usr/share/plymouth/themes/luminosity/luminosity.script

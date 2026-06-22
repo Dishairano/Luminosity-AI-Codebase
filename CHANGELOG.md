@@ -4,6 +4,17 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.5] — 2026-06-10
+
+### Toegevoegd
+- **Custom grafische boot-splash (Plymouth)** in Luminosity-stijl: "Grote
+  zonsopkomst" — een warme gloed die van onderaf opkomt, de ☀ Lumo-mascotte met
+  draaiende stralen en een voortgangsring, het "Luminosity OS"-wordmark en een
+  leesbare "OPSTARTEN…". Verbergt de kernel-/boottekst (`quiet splash`).
+  De splash draagt naadloos over aan de schil (`plymouth quit --retain-splash`).
+  Assets worden gegenereerd door `iso/plymouth/gen_assets.py`; HTML-mockup in
+  `iso/installer/web/bootsplash.html`.
+
 ## [0.2.4] — 2026-06-10
 
 ### Gewijzigd

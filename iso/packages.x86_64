@@ -18,6 +18,7 @@ syslinux
 edk2-shell
 intel-ucode
 amd-ucode
+plymouth                 # grafische boot-splash (Luminosity-thema)
 
 # --- Grafische laag (Wayland + Hyprland) ---
 hyprland
