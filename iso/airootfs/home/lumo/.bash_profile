@@ -10,9 +10,18 @@ if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     export WLR_NO_HARDWARE_CURSORS=1
     # Boot-splash naadloos overdragen: laat het beeld staan tot Hyprland tekent.
     plymouth quit --retain-splash 2>/dev/null || true
-    # Niet exec'en: zo kunnen we, als Hyprland onverwacht stopt, de reden naar de
-    # seriële poort schrijven (diagnose; zichtbaar in een VM-/CI-boottest).
+
+    # Eerst hardware-versnelling proberen (werkt op echte GPU's én VM's met
+    # werkende 3D). Crasht Hyprland meteen op een kapotte gast-GL (bv. VirtualBox
+    # VMSVGA), dan automatisch een tweede poging met Mesa software-GL (llvmpipe).
+    # Zo houden we GPU-versnelling waar het kan, met software als nette terugval.
     Hyprland >/tmp/hyprland.log 2>&1
-    echo "LUMINOSITY_HYPR_EXITED rc=$? :: $(tail -n 3 /tmp/hyprland.log 2>/dev/null | tr '\n' '|')" \
+    rc=$?
+    if [ "$rc" -ne 0 ]; then
+        echo "LUMINOSITY_HYPR_RETRY_SOFTWARE rc=$rc" > /dev/ttyS0 2>/dev/null || true
+        LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe Hyprland >/tmp/hyprland.log 2>&1
+        rc=$?
+    fi
+    echo "LUMINOSITY_HYPR_EXITED rc=$rc :: $(tail -n 3 /tmp/hyprland.log 2>/dev/null | tr '\n' '|')" \
         > /dev/ttyS0 2>/dev/null || true
 fi

@@ -4,6 +4,16 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.6] — 2026-06-10
+
+### Opgelost
+- **Hyprland-crash ("Aborted") in VirtualBox verholpen — met behoud van
+  hardware-versnelling.** De schil probeert nu eerst hardware-GL (GPU-versnelling
+  op alle systemen die het ondersteunen, inclusief VM's met werkende 3D). Crasht
+  Hyprland op een kapotte gast-GL (o.a. VirtualBox VMSVGA), dan herstart de schil
+  automatisch met Mesa software-GL (llvmpipe) als nette terugval. Geen
+  GPU-versnelling opofferen waar het wél werkt.
+
 ## [0.2.5] — 2026-06-10
 
 ### Toegevoegd

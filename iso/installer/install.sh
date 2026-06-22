@@ -145,7 +145,12 @@ if [ -z "\\\$WAYLAND_DISPLAY" ] && [ "\\\$(tty)" = "/dev/tty1" ]; then
     export PYTHONPATH=/opt/luminosity:\\\$PYTHONPATH
     export WLR_RENDERER_ALLOW_SOFTWARE=1
     export WLR_NO_HARDWARE_CURSORS=1
-    exec Hyprland
+    # Hardware-versnelling eerst; bij een crash (kapotte gast-GL) terugvallen op
+    # Mesa software-GL. Zo werkt het op echte GPU's én in VM's.
+    Hyprland >/tmp/hyprland.log 2>&1
+    if [ "\\\$?" -ne 0 ]; then
+        LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe exec Hyprland
+    fi
 fi
 EOF
 chown -R "$USERNAME:$USERNAME" /home/$USERNAME/.config /home/$USERNAME/.zprofile
