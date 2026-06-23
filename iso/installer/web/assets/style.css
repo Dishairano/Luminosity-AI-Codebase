@@ -129,3 +129,47 @@ ul.clean { color: var(--text); line-height: 1.9; padding-left: 20px; } ul.clean 
 .lumo-rays { transform-origin: center; animation: spin360 18s linear infinite; }
 .lumo-glow { animation: pulse 2.6s ease-in-out infinite; }
 .install-mascot .lumo-rays { animation: spin360 3.5s linear infinite; }
+
+/* ---------------------------------------------------------------------------
+   Responsive / schaalbaarheid — de installer moet op elke schermresolutie
+   passen (ook lage VM-resoluties zoals 1024x768 of 800x600).
+   --------------------------------------------------------------------------- */
+
+/* Lange stappenlijst mag scrollen i.p.v. de rail te laten overlopen. */
+.steps { overflow-y: auto; min-height: 0; }
+
+/* Kiosk/klein scherm: vul het hele scherm i.p.v. een gecentreerde kaart. */
+@media (max-width: 1100px), (max-height: 740px) {
+    body { padding: 0; }
+    .setup {
+        width: 100vw; height: 100vh; max-width: none;
+        border: 0; border-radius: 0; box-shadow: none;
+    }
+}
+
+/* Smal scherm: verberg de zijbalk (de voortgangsbolletjes onderaan tonen de stap). */
+@media (max-width: 880px) {
+    .setup { grid-template-columns: 1fr; }
+    .rail { display: none; }
+}
+
+/* Laag scherm: compacter zodat alles past zonder afgesneden te worden. */
+@media (max-height: 720px) {
+    .pane { padding: 26px 34px; }
+    h1 { font-size: 1.55rem; margin-bottom: 6px; }
+    .sub { margin-bottom: 16px; font-size: .95rem; }
+    .choice { padding: 11px 14px; }
+    .choice .ic { width: 36px; height: 36px; font-size: 1.1rem; }
+    .field { margin-bottom: 12px; }
+    .mascot-hero { width: 70px; height: 70px; }
+    .ring { width: 108px; height: 108px; }
+    .ring::before { width: 84px; height: 84px; }
+    .log { height: 110px; }
+    .steps li { padding: 7px 10px; font-size: .86rem; }
+}
+
+@media (max-height: 560px) {
+    .pane { padding: 18px 28px; }
+    h1 { font-size: 1.35rem; }
+    .install-mascot, .done-mascot { display: none; }
+}
