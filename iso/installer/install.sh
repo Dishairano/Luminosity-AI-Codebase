@@ -133,6 +133,7 @@ EOF
 
 install -d -o "$USERNAME" -g "$USERNAME" /home/$USERNAME/.config/hypr
 cat > /home/$USERNAME/.config/hypr/hyprland.conf <<EOF
+monitor = , highres, auto, 1
 exec-once = /usr/local/bin/luminosity-shell
 general { gaps_in = 0; gaps_out = 0; border_size = 0 }
 decoration { rounding = 0 }

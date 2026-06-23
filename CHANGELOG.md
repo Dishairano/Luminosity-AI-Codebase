@@ -4,6 +4,16 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.7] — 2026-06-11
+
+### Opgelost / Verbeterd
+- **Installer schaalt nu mee met elke schermresolutie.** De wizard is volledig
+  responsive: op lage of kleine resoluties (zoals in een VM) vult hij het scherm,
+  de zijbalk klapt in op smalle schermen en de inhoud wordt compacter op lage
+  schermen i.p.v. afgesneden te worden.
+- Hyprland kiest nu de **hoogst beschikbare resolutie** (`monitor=,highres,auto,1`),
+  zodat de installer meer ruimte krijgt op VM's met een lage standaardresolutie.
+
 ## [0.2.6] — 2026-06-10
 
 ### Opgelost
