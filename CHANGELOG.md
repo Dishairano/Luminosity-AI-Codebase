@@ -4,6 +4,16 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.9] — 2026-06-11
+
+### Opgelost
+- **Geen Hyprland-standaardwallpaper meer vóór de installer.** In het korte
+  moment tussen het opkomen van de schil en het laden van de kiosk verscheen de
+  standaard-wallpaper/het logo van Hyprland. Die zijn nu uitgeschakeld
+  (`force_default_wallpaper=0`, `disable_hyprland_logo`); de achtergrond is onze
+  donkere themakleur (#0a0c12), zodat de overgang van splash naar installer
+  naadloos is.
+
 ## [0.2.8] — 2026-06-11
 
 ### Opgelost

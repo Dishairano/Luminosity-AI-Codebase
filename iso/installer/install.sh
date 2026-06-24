@@ -137,6 +137,7 @@ monitor = , highres, auto, 1
 exec-once = /usr/local/bin/luminosity-shell
 general { gaps_in = 0; gaps_out = 0; border_size = 0 }
 decoration { rounding = 0 }
+misc { force_default_wallpaper = 0; disable_hyprland_logo = true; disable_splash_rendering = true; background_color = rgb(0a0c12) }
 \\\$mod = SUPER
 bind = \\\$mod, RETURN, exec, foot
 bind = \\\$mod SHIFT, Q, exit
