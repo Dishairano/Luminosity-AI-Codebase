@@ -14,19 +14,19 @@ export PYTHONPATH=/opt/luminosity:${PYTHONPATH:-}
 # Markering naar de seriële poort voor een VM-/CI-boottest.
 echo "LUMINOSITY_GUI_UP" > /dev/ttyS0 2>/dev/null || true
 
-# Fallback: start de server zelf als de systemd-service (nog) niet luistert.
-if ! (exec 3<>"/dev/tcp/127.0.0.1/$PORT") 2>/dev/null; then
+port_up() { (exec 3<>"/dev/tcp/127.0.0.1/$PORT") 2>/dev/null && { exec 3>&-; return 0; }; return 1; }
+
+# Eerst de root-systemd-service de tijd geven om te luisteren (vermijd een race
+# waarbij we per ongeluk zelf een niet-root server starten). Pas als die na ~6s
+# nog niet luistert, starten we er zelf één als fallback (server.py draait de
+# installatie dan via sudo, dus ook dat werkt met de juiste rechten).
+up=0
+for _ in $(seq 1 30); do port_up && { up=1; break; }; sleep 0.2; done
+if [ "$up" != "1" ]; then
     python3 "$HIER/server.py" &
     trap 'kill %1 2>/dev/null' EXIT
-else
-    exec 3>&-
+    for _ in $(seq 1 50); do port_up && break; sleep 0.2; done
 fi
-
-# Wachten tot de poort luistert (zonder curl-afhankelijkheid)
-for _ in $(seq 1 100); do
-    (exec 3<>"/dev/tcp/127.0.0.1/$PORT") 2>/dev/null && { exec 3>&-; break; }
-    sleep 0.2
-done
 
 # Kiosk-browser openen op de installer
 exec chromium \

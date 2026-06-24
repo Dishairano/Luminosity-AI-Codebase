@@ -4,6 +4,15 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.8] — 2026-06-11
+
+### Opgelost
+- **"De installer moet als root draaien" verholpen.** Door een opstart-race kon
+  de installer-server als gebruiker `lumo` starten i.p.v. als root, waardoor de
+  installatie weigerde. Nu wacht de kiosk eerst op de root-systemd-service, en
+  draait `server.py` het installatiescript en de herstart sowieso via `sudo`
+  wanneer hij niet als root loopt — dus de installatie krijgt altijd root-rechten.
+
 ## [0.2.7] — 2026-06-11
 
 ### Opgelost / Verbeterd

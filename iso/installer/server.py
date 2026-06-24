@@ -28,6 +28,16 @@ MIME = {".html": "text/html", ".css": "text/css", ".js": "application/javascript
         ".svg": "image/svg+xml", ".png": "image/png", ".json": "application/json"}
 
 
+def _priv(cmd):
+    """Voert een commando als root uit. De server hoort als root te draaien
+    (systemd-service), maar als hij door de fallback als gebruiker 'lumo' is
+    gestart, gebruiken we sudo (lumo heeft NOPASSWD-sudo in de live-ISO).
+    Zo draait de installatie altijd met de juiste rechten."""
+    if os.geteuid() == 0:
+        return cmd
+    return ["sudo", "-n", *cmd]
+
+
 def lijst_schijven():
     """Geeft de echte schijven terug via lsblk (alleen type 'disk')."""
     try:
@@ -78,7 +88,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/api/reboot":
             self._send(200, json.dumps({"ok": True}))
-            subprocess.Popen(["systemctl", "reboot"])
+            subprocess.Popen(_priv(["systemctl", "reboot"]))
             return
         if self.path != "/api/install":
             self._send(404, b"not found", "text/plain")
@@ -111,7 +121,7 @@ class Handler(BaseHTTPRequestHandler):
         #   <vrije tekst>      -> logregel
         #   DONE / ERROR <msg> -> einde
         proc = subprocess.Popen(
-            ["bash", INSTALL_SH], stdin=subprocess.PIPE,
+            _priv(["bash", INSTALL_SH]), stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         proc.stdin.write(json.dumps(cfg))
         proc.stdin.close()
