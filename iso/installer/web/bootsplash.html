@@ -5,102 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Luminosity — boot-splash (mockup)</title>
 <style>
-  :root{ --bg:#0a0c12; --accent:#ffd166; --accent2:#ff9e4a; --text:#eef0f6; --muted:#7a8198; }
+  :root{ --bg:#0a0c12; --accent:#ffd166; --accent2:#ff9e4a; --text:#eef0f6; --muted:#aab0c2; }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
   body{
-    background:var(--bg); color:var(--text);
+    background:var(--bg); color:var(--text); overflow:hidden;
     font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
-    display:flex;align-items:center;justify-content:center;overflow:hidden;
-  }
-  .hint{position:fixed;top:14px;left:0;right:0;text-align:center;color:#566;font-size:.8rem;z-index:5}
-
-  .screen{
-    position:relative;width:min(960px,94vw);aspect-ratio:16/10;
-    background:var(--bg);border-radius:14px;overflow:hidden;
-    box-shadow:0 30px 90px rgba(0,0,0,.6), inset 0 0 0 1px #1c2130;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    display:flex;align-items:center;justify-content:center;
   }
 
-  /* Warme zonsopkomst-gloed die van onderaf opkomt (horizon) */
-  .horizon{
-    position:absolute;left:50%;bottom:-46%;transform:translateX(-50%);
-    width:150%;height:95%;
-    background:
-      radial-gradient(ellipse at center,
-        rgba(255,209,102,.55) 0%,
-        rgba(255,158,74,.30) 26%,
-        rgba(255,120,60,.12) 46%,
-        transparent 66%);
-    filter:blur(6px);
-    animation:rise 4.5s ease-out forwards;
-  }
-  /* dunne horizonlijn */
-  .horizon::after{
-    content:"";position:absolute;left:50%;bottom:46%;transform:translateX(-50%);
-    width:80%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,209,102,.5),transparent);
-  }
+  /* Volledig scherm (zoals de echte splash); schaalt met vmin. */
+  .splash{position:fixed;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4.2vmin}
 
-  .stage{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:30px;margin-top:-2%}
+  /* Warme zonsopkomst-gloed van onderaf */
+  .horizon{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:160vw;height:62vh;pointer-events:none;
+    background:radial-gradient(60% 100% at 50% 100%,
+      rgba(255,209,102,.42) 0%, rgba(255,158,74,.22) 30%,
+      rgba(255,120,60,.08) 52%, transparent 72%);
+    animation:rise 3.2s ease-out both}
+  .horizon::after{content:"";position:absolute;left:10%;right:10%;bottom:30vh;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,209,102,.45),transparent)}
+
+  /* Subtiele sterren */
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.5}
+  .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cdd3e6;
+    animation:twinkle 3s ease-in-out infinite}
+
+  .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:3.4vmin;z-index:2}
 
   /* Zon + voortgangsring */
-  .sunwrap{position:relative;width:168px;height:168px}
-  .ring{position:absolute;inset:0;transform:rotate(-90deg)}
-  .ring circle{fill:none;stroke-width:3}
-  .ring .track{stroke:#20283a}
-  .ring .prog{stroke:var(--accent);stroke-linecap:round;
-    stroke-dasharray:489; stroke-dashoffset:489; animation:fill 3.4s ease-in-out infinite}
-  .sun{position:absolute;inset:24px;animation:bob 4s ease-in-out infinite}
-  .rays{transform-origin:60px 60px;animation:spin 22s linear infinite}
-  .glow{transform-origin:60px 60px;animation:pulse 3s ease-in-out infinite}
+  .sunwrap{position:relative;width:30vmin;height:30vmin}
+  .ring{position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(var(--accent) calc(var(--p,25)*1%), rgba(255,255,255,.07) 0);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 0.9vmin),#000 calc(100% - 0.9vmin));
+            mask:radial-gradient(farthest-side,transparent calc(100% - 0.9vmin),#000 calc(100% - 0.9vmin));
+    animation:sweep 2.6s ease-in-out infinite}
+  .sun{position:absolute;inset:14%;animation:bob 4s ease-in-out infinite}
+  .rays{transform-origin:50% 50%;animation:spin 24s linear infinite}
+  .glow{transform-origin:50% 50%;animation:pulse 3s ease-in-out infinite}
 
-  .wordmark{font-size:2.1rem;font-weight:700;letter-spacing:.01em}
+  .wordmark{font-size:clamp(1.6rem,4.6vmin,2.6rem);font-weight:700;letter-spacing:.01em;line-height:1}
   .wordmark .os{color:var(--accent)}
-  .tagline{margin-top:6px;color:var(--muted);font-size:.98rem;text-align:center}
+  .tagline{margin-top:1.4vmin;color:var(--muted);font-size:clamp(.85rem,2vmin,1.05rem);text-align:center}
 
-  .foot{position:absolute;bottom:26px;z-index:3;color:#cfd3e0;font-size:.9rem;
-        letter-spacing:.24em;text-transform:uppercase;animation:fade 1.8s ease-in-out infinite}
+  .foot{position:absolute;bottom:5vh;z-index:3;color:#dfe3ee;
+    font-size:clamp(.8rem,1.7vmin,1rem);letter-spacing:.28em;text-transform:uppercase;
+    animation:fade 1.8s ease-in-out infinite}
 
-  @keyframes rise{from{bottom:-70%;opacity:.4}to{bottom:-46%;opacity:1}}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes rise{from{opacity:.3;transform:translate(-50%,12vh)}to{opacity:1;transform:translateX(-50%)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2vmin)}}
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+  @keyframes sweep{0%{--p:8}50%{--p:70}100%{--p:8}}
   @keyframes fade{0%,100%{opacity:.55}50%{opacity:1}}
-  @keyframes fill{
-    0%{stroke-dashoffset:489}
-    50%{stroke-dashoffset:120}
-    100%{stroke-dashoffset:489}
-  }
+  @keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+  @property --p{syntax:'<number>';inherits:true;initial-value:25}
 </style>
 </head>
 <body>
-  <div class="hint">Mockup van de boot-splash · "Grote zonsopkomst"</div>
-  <div class="screen">
+  <div class="splash">
     <div class="horizon"></div>
+    <div class="stars" id="stars"></div>
 
     <div class="stage">
       <div class="sunwrap">
-        <svg class="ring" viewBox="0 0 168 168" aria-hidden="true">
-          <circle class="track" cx="84" cy="84" r="78"/>
-          <circle class="prog"  cx="84" cy="84" r="78"/>
-        </svg>
+        <div class="ring"></div>
         <svg class="sun" viewBox="0 0 120 120" aria-hidden="true">
-          <g class="rays" stroke="#ffd166" stroke-width="3.4" stroke-linecap="round">
-            <line x1="60" y1="4"  x2="60" y2="15"/>
-            <line x1="60" y1="105" x2="60" y2="116"/>
-            <line x1="4"  y1="60" x2="15" y2="60"/>
-            <line x1="105" y1="60" x2="116" y2="60"/>
-            <line x1="21" y1="21" x2="28" y2="28"/>
-            <line x1="92" y1="92" x2="99" y2="99"/>
-            <line x1="21" y1="99" x2="28" y2="92"/>
-            <line x1="92" y1="28" x2="99" y2="21"/>
+          <g class="rays" stroke="#ffd166" stroke-width="3.2" stroke-linecap="round">
+            <line x1="60" y1="3"  x2="60" y2="14"/><line x1="60" y1="106" x2="60" y2="117"/>
+            <line x1="3"  y1="60" x2="14" y2="60"/><line x1="106" y1="60" x2="117" y2="60"/>
+            <line x1="20" y1="20" x2="27.5" y2="27.5"/><line x1="92.5" y1="92.5" x2="100" y2="100"/>
+            <line x1="20" y1="100" x2="27.5" y2="92.5"/><line x1="92.5" y1="27.5" x2="100" y2="20"/>
           </g>
-          <circle class="glow" cx="60" cy="60" r="42" fill="#ffd166" opacity=".22"/>
-          <circle cx="60" cy="60" r="33" fill="#ffd166"/>
+          <circle class="glow" cx="60" cy="60" r="44" fill="#ffd166" opacity=".22"/>
+          <circle cx="60" cy="60" r="34" fill="#ffd166"/>
           <g fill="#241a06">
-            <circle cx="49" cy="56" r="3.6"/>
-            <circle cx="71" cy="56" r="3.6"/>
-            <path d="M45 70 q15 14 30 0" fill="none" stroke="#241a06" stroke-width="3.6" stroke-linecap="round"/>
+            <circle cx="49" cy="55" r="3.7"/><circle cx="71" cy="55" r="3.7"/>
+            <path d="M45 69 q15 15 30 0" fill="none" stroke="#241a06" stroke-width="3.7" stroke-linecap="round"/>
           </g>
         </svg>
       </div>
@@ -113,5 +96,15 @@
 
     <div class="foot">opstarten…</div>
   </div>
+
+<script>
+  // verspreide sterren genereren
+  const s = document.getElementById('stars'); let html='';
+  for(let i=0;i<46;i++){
+    const x=Math.random()*100, y=Math.random()*62, d=(Math.random()*3).toFixed(2);
+    html+=`<i style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`;
+  }
+  s.innerHTML=html;
+</script>
 </body>
 </html>

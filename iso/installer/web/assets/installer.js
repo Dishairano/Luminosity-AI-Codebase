@@ -73,6 +73,12 @@
   function renderDisks() {
     const box = $("#disk-choices");
     box.innerHTML = "";
+    if (!disks.length) {
+      box.innerHTML = '<p class="warn">Geen schijven gevonden. Sluit een (virtuele) schijf aan en herstart de installer.</p>';
+      cfg.disk = null;
+      render();
+      return;
+    }
     disks.forEach((d, i) => {
       const el = document.createElement("div");
       el.className = "choice" + (i === 0 ? " sel" : "");
@@ -86,6 +92,7 @@
     });
     if (disks[0]) { cfg.disk = disks[0].name; updateViz(); }
     bindChoiceGroup(box);
+    render();   // knop-status bijwerken nu de schijvenlijst er is
   }
 
   function bindChoiceGroup(scope) {
@@ -141,10 +148,12 @@
     $("#pw-warn").style.display = (b.length > 0 && !match) ? "block" : "none";
     return match;
   }
-  ["pw", "pw2"].forEach(id => $("#" + id).addEventListener("input", pwOk));
+  // render() erbij: de Volgende-knop moet direct aan/uit gaan tijdens het typen.
+  ["pw", "pw2"].forEach(id => $("#" + id).addEventListener("input", () => { pwOk(); render(); }));
 
   function canAdvance() {
     if (step === 1) return switches.accept;
+    if (step === 2) return !!cfg.disk;   // zonder gekozen schijf niet verder
     if (step === 4) return $("#username").value.trim() && pwOk();
     return true;
   }

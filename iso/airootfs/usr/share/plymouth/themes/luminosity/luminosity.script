@@ -1,12 +1,21 @@
 // Luminosity OS — Plymouth boot-splash ("Grote zonsopkomst").
 // Tekent: achtergrond met horizon-gloed, draaiende stralenkrans, deinende zon,
 // ronddraaiende voortgangsring, wordmark + tagline + "OPSTARTEN".
+// Alles schaalt en lijnt uit op basis van de schermhoogte, zodat het er op elke
+// resolutie (laag of hoog) goed uitziet.
 
 screen_w = Window.GetWidth();
 screen_h = Window.GetHeight();
 cx = screen_w / 2;
-cy = screen_h / 2;
 
+// Schaalfactor t.o.v. een referentie van 1080px hoog.
+scale = screen_h / 1080;
+if (scale > 1.6) { scale = 1.6; }
+if (scale < 0.5) { scale = 0.5; }
+
+fun scaled(image, factor) {
+    return image.Scale(image.GetWidth() * factor, image.GetHeight() * factor);
+}
 fun place(sprite, image, x, y, z) {
     sprite.SetImage(image);
     sprite.SetX(x - image.GetWidth() / 2);
@@ -15,25 +24,23 @@ fun place(sprite, image, x, y, z) {
     return sprite;
 }
 
-// --- Achtergrond (geschaald naar het scherm) ---
-bg_image = Image("background.png");
-bg_scaled = bg_image.Scale(screen_w, screen_h);
-bg = Sprite(bg_scaled);
+// --- Achtergrond (vult het scherm) ---
+bg = Sprite(Image("background.png").Scale(screen_w, screen_h));
 bg.SetX(0); bg.SetY(0); bg.SetZ(0);
 
-// --- Beelden ---
-sun_image   = Image("sun.png");
-rays_image  = Image("rays.png");
-ring_image  = Image("ring.png");
-title_image = Image("title.png");
-tag_image   = Image("tagline.png");
-label_image = Image("label.png");
+// --- Beelden, vooraf op de juiste maat geschaald ---
+sun_image   = scaled(Image("sun.png"),   scale);
+rays_image  = scaled(Image("rays.png"),  scale);
+ring_image  = scaled(Image("ring.png"),  scale);
+title_image = scaled(Image("title.png"), scale);
+tag_image   = scaled(Image("tagline.png"), scale);
+label_image = scaled(Image("label.png"), scale);
 
-// Verticale opbouw: zon-blok iets boven het midden, teksten eronder.
-sun_y   = cy - screen_h * 0.10;
-title_y = sun_y + 150;
-tag_y   = title_y + 38;
-label_y = screen_h - 70;
+// Verticale opbouw, relatief aan de schermhoogte (gecentreerd blok).
+sun_y   = screen_h * 0.42;
+title_y = sun_y + sun_image.GetHeight() / 2 + screen_h * 0.085;
+tag_y   = title_y + screen_h * 0.045;
+label_y = screen_h * 0.90;
 
 rays_sprite = Sprite();
 ring_sprite = Sprite();
@@ -51,28 +58,19 @@ fun refresh() {
     angle += 0.004;            // stralen draaien langzaam
     ring_angle += 0.03;        // ring draait sneller (activiteit)
 
-    // deinende zon (bob)
-    bob = Math.Sin(tick / 28) * 6;
+    bob = Math.Sin(tick / 28) * 6 * scale;   // deinende zon, relatief geschaald
 
-    rot_rays = rays_image.Rotate(angle);
-    place(rays_sprite, rot_rays, cx, sun_y + bob, 2);
+    place(rays_sprite, rays_image.Rotate(angle),      cx, sun_y + bob, 2);
+    place(ring_sprite, ring_image.Rotate(ring_angle), cx, sun_y + bob, 1);
+    place(sun_sprite,  sun_image,                     cx, sun_y + bob, 3);
 
-    rot_ring = ring_image.Rotate(ring_angle);
-    place(ring_sprite, rot_ring, cx, sun_y + bob, 1);
-
-    place(sun_sprite, sun_image, cx, sun_y + bob, 3);
-
-    // "OPSTARTEN" zacht laten pulseren
-    label.SetOpacity(0.6 + 0.4 * Math.Sin(tick / 18));
+    label.SetOpacity(0.6 + 0.4 * Math.Sin(tick / 18));   // "OPSTARTEN" pulseert
 }
-
 Plymouth.SetRefreshFunction(refresh);
 
-// Wachtwoord-prompt (komt op een live-ISO niet voor, maar netjes afgehandeld).
 fun display_normal() { }
 Plymouth.SetDisplayNormalFunction(display_normal);
 
-// Voortgang van de boot kan de ring-opacity sturen (optioneel, subtiel).
 fun progress_cb(duration, progress) {
     ring_sprite.SetOpacity(0.5 + 0.5 * progress);
 }
