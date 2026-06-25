@@ -4,6 +4,21 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.10] — 2026-06-11
+
+### Opgelost
+- **Installer: "Volgende" werkt nu direct bij de account-stap.** De knop wordt
+  live bijgewerkt terwijl je typt; je hoeft niet meer eerst terug.
+- **Installer: "Schijf /dev/None bestaat niet" verholpen.** Schijven met een
+  spatie in de modelnaam (bv. VirtualBox "VBOX HARDDISK") werden gemist door de
+  kolom-parsing; nu wordt `lsblk --json` gebruikt. Bovendien blokkeert de wizard
+  "Volgende" als er geen schijf is, en weigert `install.sh` een lege schijfnaam.
+
+### Verbeterd
+- **Boot-splash herzien**: schaalt nu mee met elke resolutie (relatieve maten en
+  uitlijning), met een verzorgder ontwerp (sterren, fijnere voortgangsring,
+  leesbare typografie) dat beter bij de installer-stijl past.
+
 ## [0.2.9] — 2026-06-11
 
 ### Opgelost

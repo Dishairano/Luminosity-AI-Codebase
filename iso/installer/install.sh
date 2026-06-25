@@ -20,7 +20,9 @@ fail() { echo "ERROR $1"; exit 1; }
 
 # --- Config inlezen (JSON op stdin -> shell-variabelen via python3) ---
 CFG="$(cat)"
-veld() { printf '%s' "$CFG" | python3 -c "import json,sys;print(json.load(sys.stdin).get('$1',''))"; }
+# Leest een veld uit de JSON-config. JSON null -> lege string (zodat een
+# ontbrekende schijf nooit als "/dev/None" wordt geïnterpreteerd).
+veld() { printf '%s' "$CFG" | python3 -c "import json,sys;print(json.load(sys.stdin).get('$1','') or '')"; }
 
 DISK="$(veld disk)"
 LAYOUT="$(veld layout)"

@@ -39,22 +39,30 @@ def _priv(cmd):
 
 
 def lijst_schijven():
-    """Geeft de echte schijven terug via lsblk (alleen type 'disk')."""
+    """Geeft de echte schijven terug via lsblk (alleen type 'disk').
+
+    JSON-uitvoer i.p.v. kolommen parsen: modelnamen kunnen spaties bevatten
+    (bv. "VBOX HARDDISK"), waardoor kolom-parsing schijven miste.
+    """
     try:
         uit = subprocess.run(
-            ["lsblk", "-dn", "-b", "-o", "NAME,SIZE,MODEL,TYPE"],
+            ["lsblk", "--json", "-d", "-b", "-o", "NAME,SIZE,MODEL,TYPE"],
             capture_output=True, text=True, check=True).stdout
+        data = json.loads(uit)
     except Exception:
         return []
     schijven = []
-    for regel in uit.splitlines():
-        velden = regel.split(None, 3)
-        if len(velden) < 4 or velden[-1] != "disk":
+    for dev in data.get("blockdevices", []):
+        if dev.get("type") != "disk":
             continue
-        naam, bytes_, model = velden[0], int(velden[1]), (velden[2] if len(velden) > 3 else "")
+        bytes_ = int(dev.get("size") or 0)
         gb = bytes_ / 1e9
         grootte = f"{gb:.0f} GB" if gb >= 1 else f"{bytes_/1e6:.0f} MB"
-        schijven.append({"name": naam, "size": grootte, "model": model.strip()})
+        schijven.append({
+            "name": dev.get("name", ""),
+            "size": grootte,
+            "model": (dev.get("model") or "").strip(),
+        })
     return schijven
 
 
