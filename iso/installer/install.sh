@@ -52,21 +52,30 @@ TARGET_PACKAGES=(
   hyprland xdg-desktop-portal-hyprland qt6-base qt6-declarative wayland foot
   python git rsync
   mkinitcpio
+  grub efibootmgr
 )
 
 log "Installatie gestart voor /dev/$DISK ($LAYOUT)"; p 2
 
+# Firmware-modus van de live-omgeving (bepaalt de bootloader).
+if [ -d /sys/firmware/efi ]; then FIRMWARE=uefi; else FIRMWARE=bios; fi
+log "Firmware-modus: $FIRMWARE"
+
 # --- 1. Partitioneren + formatteren ---
 if [ "$LAYOUT" = "whole" ]; then
-    log "Schijf wissen en partities maken (EFI + root)…"
+    log "Schijf wissen en partities maken…"
     wipefs -a "$TARGET"            || fail "Kon $TARGET niet wissen."
     sgdisk -Z "$TARGET"           >/dev/null 2>&1 || true
-    sgdisk -n1:0:+512M -t1:ef00 -c1:EFI \
-           -n2:0:0     -t2:8300 -c2:luminosity "$TARGET" >/dev/null \
+    # Layout die zowel BIOS als UEFI kan booten:
+    #   p1 = 1 MiB BIOS-boot (ef02, voor GRUB op GPT bij BIOS)
+    #   p2 = 512 MiB EFI System Partition (ef00, voor systemd-boot bij UEFI)
+    #   p3 = root (ext4)
+    sgdisk -n1:0:+1M   -t1:ef02 -c1:bios_grub \
+           -n2:0:+512M -t2:ef00 -c2:EFI \
+           -n3:0:0     -t3:8300 -c3:luminosity "$TARGET" >/dev/null \
         || fail "Partitioneren mislukt."
-    # p1/p2 voor sd*, p1/p2 voor nvme heet nvme0n1p1
-    if [[ "$DISK" == nvme* || "$DISK" == mmcblk* ]]; then EFI="${TARGET}p1"; ROOT="${TARGET}p2"
-    else EFI="${TARGET}1"; ROOT="${TARGET}2"; fi
+    if [[ "$DISK" == nvme* || "$DISK" == mmcblk* ]]; then EFI="${TARGET}p2"; ROOT="${TARGET}p3"
+    else EFI="${TARGET}2"; ROOT="${TARGET}3"; fi
     sleep 1; partprobe "$TARGET" 2>/dev/null || true
     log "Bestandssystemen aanmaken…"
     mkfs.fat -F32 "$EFI"   >/dev/null 2>&1 || fail "Kon EFI niet formatteren."
@@ -170,19 +179,27 @@ exec foot bash -c "cd /opt/luminosity && python -m luminosity_engine.cli"
 EOF
 chmod 755 /usr/local/bin/luminosity-shell
 
-# Bootloader (systemd-boot, UEFI)
-bootctl install
-ROOT_UUID=\$(findmnt -no UUID /)
-cat > /boot/loader/loader.conf <<EOF
+# Bootloader — afhankelijk van de firmware-modus van de installatie.
+if [ "$FIRMWARE" = "uefi" ]; then
+    # UEFI: systemd-boot op de EFI System Partition (gemount op /boot).
+    bootctl install
+    ROOT_UUID=\$(findmnt -no UUID /)
+    cat > /boot/loader/loader.conf <<EOF
 default luminosity
-timeout 2
+timeout 0
 EOF
-cat > /boot/loader/entries/luminosity.conf <<EOF
+    cat > /boot/loader/entries/luminosity.conf <<EOF
 title   Luminosity OS
 linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=UUID=\$ROOT_UUID rw quiet
 EOF
+else
+    # BIOS/legacy: GRUB in de MBR/bios_grub-partitie van de schijf.
+    sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub 2>/dev/null || true
+    grub-install --target=i386-pc --recheck "$TARGET" || exit 1
+    grub-mkconfig -o /boot/grub/grub.cfg || exit 1
+fi
 CHROOT
 chmod +x /mnt/root/lum-chroot.sh
 arch-chroot /mnt /root/lum-chroot.sh || fail "Configuratie in chroot mislukt."

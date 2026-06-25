@@ -4,6 +4,15 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.2.11] — 2026-06-11
+
+### Opgelost
+- **Geïnstalleerd systeem boot nu in zowel BIOS- als UEFI-modus** (bug #1). De
+  installer detecteert de firmware-modus en schrijft de juiste bootloader:
+  systemd-boot bij UEFI, GRUB bij BIOS. De schijf krijgt een layout die beide
+  ondersteunt (1 MiB BIOS-boot + EFI-partitie + root), zodat een install niet
+  langer onbootbaar is wanneer de machine in BIOS/legacy-modus draait.
+
 ## [0.2.10] — 2026-06-11
 
 ### Opgelost
