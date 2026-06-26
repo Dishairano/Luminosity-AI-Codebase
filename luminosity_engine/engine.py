@@ -16,8 +16,9 @@ Pas als de gebruiker akkoord gaat, roept de schil `voer_uit()` aan.
 import subprocess
 from dataclasses import dataclass
 
-from . import confirm, logbook, safety, translator
+from . import confirm, logbook, ongedaan, safety, translator
 from .confirm import Bevestiging
+from .ongedaan import Ongedaansuggestie
 from .translator import Vertaling
 
 try:  # de modules zijn een los pakket naast de engine (modules/ in de repo, /opt/luminosity)
@@ -58,6 +59,7 @@ class Uitvoerresultaat:
     """Het resultaat nadat een commando echt is uitgevoerd."""
     gelukt: bool
     uitvoer: str   # wat het commando teruggaf (of een begrijpelijke foutuitleg)
+    ongedaan: Ongedaansuggestie | None = None  # US9: hoe je dit kunt terugdraaien
 
 
 def verwerk(invoer: str) -> Bevestiging:
@@ -83,7 +85,9 @@ def voer_uit(invoer: str, bevestiging: Bevestiging) -> Uitvoerresultaat:
         gelukt = proces.returncode == 0
         if gelukt:
             logbook.schrijf(invoer, bevestiging.commando, "geslaagd")
-            return Uitvoerresultaat(True, proces.stdout.strip() or "Klaar.")
+            # US9: stel voor hoe je deze geslaagde opdracht kunt terugdraaien.
+            return Uitvoerresultaat(True, proces.stdout.strip() or "Klaar.",
+                                    ongedaan.suggereer(bevestiging.commando))
         # Maak van de ruwe fout een begrijpelijke uitleg (verbeterpunt US/VERB-D1).
         logbook.schrijf(invoer, bevestiging.commando, "mislukt")
         return Uitvoerresultaat(False, _begrijpelijke_fout(proces.stderr.strip()))

@@ -23,7 +23,7 @@ import json
 import sys
 from dataclasses import asdict
 
-from . import engine, logbook
+from . import engine, logbook, widgets
 
 
 def _bevestiging_json(invoer: str, run: bool, cancel: bool) -> dict:
@@ -56,7 +56,10 @@ def _toon(invoer: str) -> None:
         if bevestiging.extra_waarschuwing else "  Uitvoeren? (j/n) "
     if input(vraag).strip().lower() in ("j", "ja", "y"):
         resultaat = engine.voer_uit(invoer, bevestiging)
-        print(f"  Resultaat: {resultaat.uitvoer}\n")
+        print(f"  Resultaat: {resultaat.uitvoer}")
+        if resultaat.ongedaan and resultaat.ongedaan.mogelijk:
+            print(f"  Ongedaan maken: {resultaat.ongedaan.commando}")
+        print()
     else:
         engine.annuleer(invoer, bevestiging)
         print("  Geannuleerd.\n")
@@ -69,10 +72,15 @@ def main() -> None:
     parser.add_argument("--run", action="store_true", help="voer uit (na bevestiging in de UI)")
     parser.add_argument("--cancel", action="store_true", help="registreer een annulering")
     parser.add_argument("--logboek", action="store_true", help="toon het logboek als JSON")
+    parser.add_argument("--widgets", action="store_true", help="toon statuswidgets (schijf/tijd) als JSON")
     args = parser.parse_args()
 
     if args.logboek:
         print(json.dumps(logbook.lees(), ensure_ascii=False, indent=2))
+        return
+
+    if args.widgets:
+        print(json.dumps(widgets.verzamel(), ensure_ascii=False))
         return
 
     invoer = " ".join(args.invoer).strip()

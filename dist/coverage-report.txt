@@ -1,18 +1,19 @@
-.....................................                                    [100%]
+..............................................                           [100%]
 ================================ tests coverage ================================
 _______________ coverage: platform linux, python 3.12.3-final-0 ________________
 
 Name                              Stmts   Miss  Cover   Missing
 ---------------------------------------------------------------
 luminosity_engine/__init__.py         3      0   100%
-luminosity_engine/cli.py             64     64     0%   21-105
+luminosity_engine/cli.py             71     71     0%   21-113
 luminosity_engine/confirm.py         16      0   100%
-luminosity_engine/engine.py          54      4    93%   90-92, 112
+luminosity_engine/engine.py          56      4    93%   94-96, 116
 luminosity_engine/logbook.py         22      2    91%   23-24
+luminosity_engine/ongedaan.py        18      0   100%
 luminosity_engine/safety.py          18      0   100%
 luminosity_engine/translator.py      42      2    95%   80, 96
+luminosity_engine/widgets.py          8      0   100%
 modules/backup.py                    21      0   100%
 modules/netwerk.py                   23      0   100%
 ---------------------------------------------------------------
-TOTAL                               263     72    73%
-37 passed in 1.13s
+TOTAL                               298     79    73%
