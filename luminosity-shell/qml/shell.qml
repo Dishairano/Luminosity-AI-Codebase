@@ -35,6 +35,15 @@ ShellRoot {
         property bool   bezig: false
         property var    logregels: []
 
+        // US7 - echte statuswidgets (schijf + klok)
+        property string widgetTijd: ""
+        property string widgetSchijf: "…"
+
+        // US9 - 'ongedaan maken'-suggestie bij het laatste resultaat
+        property bool   ongedaanMogelijk: false
+        property string ongedaanCommando: ""
+        property string ongedaanUitleg: ""
+
         // Helper: bouwt het engine-commando met de juiste vlaggen.
         function engineArgs(extra) {
             var a = ["-m", "luminosity_engine.cli", "--json"];
@@ -72,6 +81,27 @@ ShellRoot {
             }
         }
 
+        // US7 - haalt echte statuswidgets op (schijfruimte + tijd).
+        Process {
+            id: widgetsProc
+            command: ["python3", "-m", "luminosity_engine.cli", "--widgets"]
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    try {
+                        var w = JSON.parse(this.text);
+                        paneel.widgetSchijf = w.schijf_tekst;
+                        paneel.widgetTijd = w.tijd;
+                    } catch (e) { }
+                }
+            }
+        }
+
+        // Ververst de schijf-widget periodiek; de klok loopt apart per minuut.
+        Timer { interval: 30000; running: true; repeat: true; triggeredOnStart: true
+                onTriggered: widgetsProc.running = true }
+        Timer { interval: 1000; running: true; repeat: true
+                onTriggered: paneel.widgetTijd = Qt.formatDateTime(new Date(), "HH:mm") }
+
         // Verwerkt het JSON-antwoord van de engine en vult de UI-velden.
         function verwerkAntwoord(tekst) {
             try {
@@ -85,6 +115,11 @@ ShellRoot {
                 paneel.extraWaarschuwing = b.extra_waarschuwing;
                 paneel.heeftBevestiging = true;
                 paneel.resultaat = data.resultaat ? data.resultaat.uitvoer : "";
+                // US9 - lees de 'ongedaan maken'-suggestie uit het resultaat.
+                var o = data.resultaat ? data.resultaat.ongedaan : null;
+                paneel.ongedaanMogelijk = o ? o.mogelijk : false;
+                paneel.ongedaanCommando = o ? o.commando : "";
+                paneel.ongedaanUitleg = o ? o.uitleg : "";
             } catch (e) {
                 paneel.uitleg = "Kon het antwoord van de engine niet lezen.";
             }
@@ -94,6 +129,7 @@ ShellRoot {
             paneel.invoer = tekst;
             paneel.resultaat = "";
             paneel.heeftBevestiging = false;
+            paneel.ongedaanMogelijk = false;
             paneel.bezig = true;
             voorbereiden.command = engineArgs([]);
             voorbereiden.running = true;
@@ -126,7 +162,9 @@ ShellRoot {
                     text: paneel.bezig ? "● bezig…" : "● klaar"
                     color: paneel.bezig ? "#e0b341" : "#5bd17a"; font.pixelSize: 14
                 }
-                Text { text: "  🔋  📶  🕐"; color: "#9aa0b4"; font.pixelSize: 16 }
+                // US7 - echte statuswidgets: schijfruimte en klok (live data uit de engine)
+                Text { text: "💾 " + paneel.widgetSchijf; color: "#9aa0b4"; font.pixelSize: 14 }
+                Text { text: "🕐 " + paneel.widgetTijd; color: "#9aa0b4"; font.pixelSize: 14 }
             }
 
             Text {
@@ -210,6 +248,30 @@ ShellRoot {
                     text: paneel.resultaat
                     color: "#cfe8ff"; font.family: "monospace"; font.pixelSize: 13
                     wrapMode: Text.WrapAnywhere
+                }
+            }
+
+            // US9 - 'Ongedaan maken'-suggestie bij een geslaagde opdracht
+            Rectangle {
+                Layout.fillWidth: true
+                visible: paneel.resultaat.length > 0 && paneel.ongedaanMogelijk
+                radius: 12; color: "#1b1e27"; border.color: "#3a3f55"
+                implicitHeight: ongedaankolom.implicitHeight + 24
+                ColumnLayout {
+                    id: ongedaankolom
+                    anchors.fill: parent; anchors.margins: 12; spacing: 8
+                    Text { text: "Spijt? Je kunt dit terugdraaien."; color: "#e8e8f0"; font.pixelSize: 15 }
+                    Text {
+                        text: paneel.ongedaanUitleg; color: "#9aa0b4"; font.pixelSize: 13
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap
+                    }
+                    Rectangle {
+                        width: 160; height: 38; radius: 8; color: "#3a3f55"
+                        Text { anchors.centerIn: parent; text: "↩ Ongedaan maken"; color: "white"; font.pixelSize: 14 }
+                        // Voert niet direct uit: biedt het tegen-commando opnieuw aan,
+                        // zodat het weer door veiligheid + bevestiging gaat.
+                        MouseArea { anchors.fill: parent; onClicked: paneel.start(paneel.ongedaanCommando) }
+                    }
                 }
             }
 
