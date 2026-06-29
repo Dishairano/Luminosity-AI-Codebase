@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="470" viewBox="0 0 760 470" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="760" height="470" fill="#11131a"/>
+  <text x="30" y="34" fill="#ffffff" font-size="18" font-weight="bold">Netwerk- &amp; back-upschermen (US11–US13)</text>
+
+  <!-- NETWERK -->
+  <text x="30" y="70" fill="#8ad0ff" font-size="14" font-weight="bold">📶 Netwerk — "verbind met wifi 'Thuis'"</text>
+  <rect x="30" y="80" width="700" height="92" rx="12" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="44" y="104" fill="#ffffff" font-size="15" font-weight="bold">Netwerk-opdracht klaar</text>
+  <text x="44" y="126" fill="#8ad0ff" font-size="13" font-family="monospace">$ nmcli device wifi connect "Thuis"</text>
+  <text x="44" y="146" fill="#e8e8f0" font-size="13">Ik verbind je met 'Thuis'. Mogelijk vraagt het systeem nog om het wachtwoord.</text>
+  <rect x="44" y="152" width="100" height="14" rx="4" fill="#0e1726"/>
+  <rect x="600" y="98" width="116" height="30" rx="8" fill="#2f7d4f"/>
+  <text x="624" y="118" fill="#ffffff" font-size="13">Verbinden</text>
+
+  <!-- BACK-UP -->
+  <text x="30" y="206" fill="#5bd17a" font-size="14" font-weight="bold">💾 Back-up maken (US12) — niet-destructief</text>
+  <rect x="30" y="216" width="700" height="80" rx="12" fill="#1b1e27" stroke="#2f7d4f"/>
+  <text x="44" y="240" fill="#ffffff" font-size="15" font-weight="bold">Klaar om een back-up te maken</text>
+  <text x="44" y="262" fill="#8ad0ff" font-size="12" font-family="monospace">$ rsync -a "~/Documenten/" "~/Luminosity-Backups/Documenten/"</text>
+  <text x="44" y="282" fill="#e8e8f0" font-size="13">Ik maak een back-up van je documenten.</text>
+  <rect x="600" y="240" width="116" height="30" rx="8" fill="#2f7d4f"/>
+  <text x="628" y="260" fill="#ffffff" font-size="13">Uitvoeren</text>
+
+  <!-- HERSTEL -->
+  <text x="30" y="330" fill="#e0b341" font-size="14" font-weight="bold">↩ Terugzetten (US13) — GEVAARLIJK, extra bevestiging</text>
+  <rect x="30" y="340" width="700" height="96" rx="12" fill="#1b1e27" stroke="#e0b341"/>
+  <text x="44" y="364" fill="#ffffff" font-size="15" font-weight="bold">Klaar om een back-up terug te zetten</text>
+  <text x="44" y="386" fill="#8ad0ff" font-size="12" font-family="monospace">$ rsync -a "~/Luminosity-Backups/Documenten/" "~/Documenten/"</text>
+  <text x="44" y="406" fill="#ff6b6b" font-size="13">⚠ Let op: dit overschrijft je huidige bestanden.</text>
+  <rect x="560" y="396" width="156" height="30" rx="8" fill="#a8631f"/>
+  <text x="582" y="416" fill="#ffffff" font-size="13">Toch uitvoeren</text>
+</svg>
