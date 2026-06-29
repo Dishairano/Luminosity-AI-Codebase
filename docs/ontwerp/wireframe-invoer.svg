@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="760" height="430" fill="#11131a"/>
+  <text x="30" y="34" fill="#ffffff" font-size="18" font-weight="bold">Invoerbalk, statuswidget &amp; bevestigingskaart — drie toestanden</text>
+
+  <!-- statuswidget + invoerbalk -->
+  <rect x="30" y="52" width="120" height="30" rx="8" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="40" y="72" fill="#9aa0b4" font-size="12">💾 71%  🕐 17:06</text>
+  <rect x="170" y="52" width="560" height="44" rx="12" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="186" y="80" fill="#9aa0b4" font-size="15">typ hier in gewone taal…</text>
+
+  <!-- toestand 1: herkend -->
+  <rect x="30" y="118" width="700" height="86" rx="12" fill="#1b1e27" stroke="#2f7d4f"/>
+  <text x="44" y="142" fill="#5bd17a" font-size="12" font-weight="bold">① HERKEND — veilig</text>
+  <text x="44" y="164" fill="#8ad0ff" font-size="13" font-family="monospace">$ sudo pacman -S firefox</text>
+  <text x="44" y="184" fill="#e8e8f0" font-size="13">Ik installeer 'firefox'.</text>
+  <rect x="560" y="158" width="100" height="26" rx="7" fill="#2f7d4f"/>
+  <text x="578" y="176" fill="#ffffff" font-size="12">Uitvoeren</text>
+
+  <!-- toestand 2: niet herkend -->
+  <rect x="30" y="218" width="700" height="70" rx="12" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="44" y="242" fill="#9aa0b4" font-size="12" font-weight="bold">② NIET HERKEND</text>
+  <text x="44" y="264" fill="#e8e8f0" font-size="13">"Ik snap deze opdracht nog niet. Probeer bv. 'installeer firefox'."</text>
+  <text x="44" y="282" fill="#6b7080" font-size="12">geen knop — er valt niets uit te voeren</text>
+
+  <!-- toestand 3: geblokkeerd -->
+  <rect x="30" y="302" width="700" height="86" rx="12" fill="#1b1e27" stroke="#ff6b6b"/>
+  <text x="44" y="326" fill="#ff6b6b" font-size="12" font-weight="bold">③ GEBLOKKEERD — veiligheidslaag (US3)</text>
+  <text x="44" y="348" fill="#8ad0ff" font-size="13" font-family="monospace">$ rm -rf /</text>
+  <text x="44" y="368" fill="#ff6b6b" font-size="13">Dit commando is te gevaarlijk en wordt niet uitgevoerd.</text>
+  <rect x="560" y="342" width="100" height="26" rx="7" fill="#2a2e3c"/>
+  <text x="572" y="360" fill="#6b7080" font-size="12">Uitvoeren</text>
+</svg>
