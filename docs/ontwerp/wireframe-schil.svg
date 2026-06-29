@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="620" viewBox="0 0 760 620" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="760" height="620" fill="#11131a"/>
+  <text x="30" y="40" fill="#ffffff" font-size="22" font-weight="bold">☀ Luminosity</text>
+  <!-- status widgets (US7) -->
+  <text x="470" y="40" fill="#5bd17a" font-size="14">● klaar</text>
+  <rect x="540" y="24" width="90" height="22" rx="6" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="550" y="40" fill="#9aa0b4" font-size="12">💾 71% · 9GB</text>
+  <rect x="640" y="24" width="90" height="22" rx="6" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="652" y="40" fill="#9aa0b4" font-size="12">🕐 17:06</text>
+  <text x="640" y="66" fill="#6b7080" font-size="11">US7-widgets</text>
+
+  <text x="30" y="86" fill="#e8e8f0" font-size="20">Hoi! Wat wil je doen?</text>
+
+  <!-- invoerbalk -->
+  <rect x="30" y="100" width="700" height="50" rx="12" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="46" y="131" fill="#9aa0b4" font-size="16">installeer firefox|</text>
+  <text x="600" y="131" fill="#6b7080" font-size="11">invoerbalk (US1/US5)</text>
+
+  <!-- bevestigingskaart -->
+  <rect x="30" y="168" width="700" height="150" rx="14" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="46" y="196" fill="#ffffff" font-size="17" font-weight="bold">Klaar om te installeren</text>
+  <text x="46" y="222" fill="#8ad0ff" font-size="14" font-family="monospace">$ sudo pacman -S firefox</text>
+  <text x="46" y="246" fill="#e8e8f0" font-size="14">Ik installeer 'firefox' met de pakketbeheerder pacman.</text>
+  <text x="46" y="270" fill="#e0b341" font-size="13">⚠ veiligheidsmelding verschijnt hier (US3)</text>
+  <!-- knoppen -->
+  <rect x="46" y="282" width="140" height="30" rx="8" fill="#2f7d4f"/>
+  <text x="80" y="302" fill="#ffffff" font-size="13">Uitvoeren</text>
+  <rect x="198" y="282" width="120" height="30" rx="8" fill="#3a3f55"/>
+  <text x="228" y="302" fill="#ffffff" font-size="13">Annuleren</text>
+  <text x="560" y="200" fill="#6b7080" font-size="11">bevestigingskaart (US2)</text>
+
+  <!-- resultaat -->
+  <rect x="30" y="334" width="700" height="44" rx="12" fill="#0e1726" stroke="#26405f"/>
+  <text x="46" y="361" fill="#cfe8ff" font-size="13" font-family="monospace">Klaar.</text>
+  <text x="600" y="361" fill="#6b7080" font-size="11">resultaat-uitvoer</text>
+
+  <!-- ongedaan maken (US9) -->
+  <rect x="30" y="392" width="700" height="60" rx="12" fill="#1b1e27" stroke="#3a3f55"/>
+  <text x="46" y="416" fill="#e8e8f0" font-size="14">Spijt? Je kunt dit terugdraaien.</text>
+  <rect x="46" y="424" width="160" height="22" rx="8" fill="#3a3f55"/>
+  <text x="58" y="439" fill="#ffffff" font-size="12">↩ Ongedaan maken</text>
+  <text x="560" y="416" fill="#6b7080" font-size="11">ongedaan-suggestie (US9)</text>
+
+  <!-- logboek -->
+  <rect x="30" y="466" width="700" height="130" rx="12" fill="#15171f" stroke="#2a2e3c"/>
+  <text x="46" y="490" fill="#9aa0b4" font-size="14" font-weight="bold">Logboek</text>
+  <text x="46" y="514" fill="#5bd17a" font-size="13">✓ installeer firefox</text>
+  <text x="640" y="514" fill="#6b7080" font-size="12">17:06</text>
+  <text x="46" y="536" fill="#9aa0b4" font-size="13">⊘ verwijder spotify</text>
+  <text x="640" y="536" fill="#6b7080" font-size="12">17:02</text>
+  <text x="46" y="558" fill="#ff6b6b" font-size="13">⛔ rm -rf /</text>
+  <text x="640" y="558" fill="#6b7080" font-size="12">16:58</text>
+  <text x="600" y="490" fill="#6b7080" font-size="11">logboekpaneel (US8)</text>
+</svg>
