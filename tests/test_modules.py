@@ -46,3 +46,37 @@ def test_backup_terugzetten():
 def test_backup_onbekend():
     a = backup.verwerk_backup("speel muziek af")
     assert not a.herkend
+
+
+# --- VERB-G1: verbeteringen op basis van feedback ---
+
+def test_netwerk_wifi_uit():
+    a = netwerk.verwerk_netwerk("zet wifi uit")
+    assert a.herkend
+    assert a.commando == "nmcli radio wifi off"
+
+
+def test_netwerk_wifi_aan():
+    a = netwerk.verwerk_netwerk("zet wifi aan")
+    assert a.herkend
+    assert a.commando == "nmcli radio wifi on"
+
+
+def test_netwerk_vergeet_netwerk():
+    a = netwerk.verwerk_netwerk('vergeet "Thuis"')
+    assert a.herkend
+    assert a.commando == 'nmcli connection delete "Thuis"'
+
+
+def test_backup_kiest_de_juiste_map():
+    a = backup.verwerk_backup("maak een back-up van mijn foto's")
+    assert a.herkend
+    assert a.soort == "backup"
+    assert "Afbeeldingen" in a.commando
+
+
+def test_backup_herstel_kiest_de_juiste_map():
+    a = backup.verwerk_backup("zet mijn downloads terug")
+    assert a.herkend
+    assert a.soort == "herstel"
+    assert "Downloads" in a.commando
