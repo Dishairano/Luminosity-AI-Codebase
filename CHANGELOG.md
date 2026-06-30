@@ -4,6 +4,26 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
 [Keep a Changelog](https://keepachangelog.com/) en de versies volgen
 [Semantic Versioning](https://semver.org/lang/nl/).
 
+## [0.3.0] — 2026-06-30
+
+### Toegevoegd
+- **US9 — 'Ongedaan maken'-suggestie.** Na een geslaagde opdracht stelt Luminosity
+  voor hoe je die terugdraait (een installatie ⇄ een verwijdering). De suggestie
+  wordt niet automatisch uitgevoerd maar opnieuw als opdracht aangeboden, zodat ze
+  weer langs de veiligheids- en bevestigingslaag gaat. Zichtbaar in de schil en de
+  CLI. (`luminosity_engine/ongedaan.py`, `tests/test_ongedaan.py`)
+- **US7 — echte statuswidgets.** De bovenbalk van de schil toont nu live
+  schijfruimte en klok in plaats van vaste plaatjes. Nieuwe `--widgets`-CLI levert
+  de gegevens. (`luminosity_engine/widgets.py`, `tests/test_widgets.py`)
+- **Ontwerpdocumenten (ONT-kaarten)** in `docs/ontwerp/`: flowdiagram van de
+  taal-engine, ERD van het logboek, flowchart van het back-up-/herstelproces, en
+  wireframes van de schil, de invoerbalk en de netwerk-/back-upschermen.
+- **Leesbaar testverslag** (`docs/TESTVERSLAG.md`) met een testcases-tabel.
+
+### Gewijzigd
+- Testsuite uitgebreid naar **46 tests** (was 37); engine 93%, modules 100%,
+  ongedaan/widgets 100%.
+
 ## [0.2.11] — 2026-06-11
 
 ### Opgelost
