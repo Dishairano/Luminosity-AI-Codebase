@@ -1,4 +1,4 @@
-..............................................                           [100%]
+...................................................                      [100%]
 ================================ tests coverage ================================
 _______________ coverage: platform linux, python 3.12.3-final-0 ________________
 
@@ -13,7 +13,7 @@ luminosity_engine/ongedaan.py        18      0   100%
 luminosity_engine/safety.py          18      0   100%
 luminosity_engine/translator.py      42      2    95%   80, 96
 luminosity_engine/widgets.py          8      0   100%
-modules/backup.py                    21      0   100%
-modules/netwerk.py                   23      0   100%
+modules/backup.py                    30      0   100%
+modules/netwerk.py                   35      0   100%
 ---------------------------------------------------------------
-TOTAL                               298     79    73%
+TOTAL                               319     79    75%

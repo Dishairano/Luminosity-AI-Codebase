@@ -19,9 +19,16 @@ Alle noemenswaardige wijzigingen aan Luminosity OS. Het formaat volgt
   taal-engine, ERD van het logboek, flowchart van het back-up-/herstelproces, en
   wireframes van de schil, de invoerbalk en de netwerk-/back-upschermen.
 - **Leesbaar testverslag** (`docs/TESTVERSLAG.md`) met een testcases-tabel.
+- **VERB-G1 — netwerk/back-up-verbeteringen** (o.b.v. feedback): wifi aan/uit zetten
+  en een opgeslagen netwerk vergeten; back-uplocatie instelbaar via
+  `LUMINOSITY_BACKUP_DIR` en keuze van map (documenten, foto's, downloads, muziek…)
+  i.p.v. alleen Documenten. (`modules/netwerk.py`, `modules/backup.py`)
+- **VERB-T1 — UX-verbeteringen schil** (o.b.v. testgebruikers): automatische focus op
+  de invoerbalk, een placeholder-hint, Esc om te wissen, en een vriendelijke lege-staat
+  in het logboek. (`luminosity-shell/qml/shell.qml`)
 
 ### Gewijzigd
-- Testsuite uitgebreid naar **46 tests** (was 37); engine 93%, modules 100%,
+- Testsuite uitgebreid naar **51 tests** (was 37); engine 93%, modules 100%,
   ongedaan/widgets 100%.
 
 ## [0.2.11] — 2026-06-11
