@@ -145,8 +145,14 @@ ShellRoot {
             uitvoeren.running = true;
         }
         function verversLogboek() { logboek.running = true; }
+        // VERB-T1: Esc wist een openstaande bevestiging/resultaat zonder iets te loggen.
+        function wisBevestiging() {
+            paneel.heeftBevestiging = false;
+            paneel.resultaat = "";
+            paneel.ongedaanMogelijk = false;
+        }
 
-        Component.onCompleted: verversLogboek()
+        Component.onCompleted: { verversLogboek(); invoerveld.forceActiveFocus(); }
 
         ColumnLayout {
             anchors.centerIn: parent
@@ -172,16 +178,28 @@ ShellRoot {
                 color: "#e8e8f0"; font.pixelSize: 24
             }
 
-            // Invoerbalk (gewone taal)
+            // Invoerbalk (gewone taal) — VERB-T1: autofocus, placeholder, Esc om te wissen
             Rectangle {
                 Layout.fillWidth: true
-                height: 56; radius: 12; color: "#1b1e27"; border.color: "#3a3f55"
+                height: 56; radius: 12; color: "#1b1e27"
+                border.color: invoerveld.activeFocus ? "#ffd166" : "#3a3f55"
                 TextInput {
                     id: invoerveld
                     anchors.fill: parent; anchors.margins: 16
                     color: "white"; font.pixelSize: 18
                     verticalAlignment: TextInput.AlignVCenter
-                    onAccepted: if (text.length > 0) paneel.start(text)
+                    focus: true
+                    // Typt de gebruiker een opdracht en drukt Enter? Start, wis en houd focus.
+                    onAccepted: if (text.trim().length > 0) { paneel.start(text.trim()); text = ""; }
+                    // Escape wist het invoerveld én een openstaande bevestiging.
+                    Keys.onEscapePressed: { text = ""; paneel.wisBevestiging(); }
+                    // Placeholder zolang het veld leeg is.
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: invoerveld.text.length === 0
+                        text: "Bijv. installeer firefox — of druk op Esc om te wissen"
+                        color: "#6b7080"; font.pixelSize: 16
+                    }
                 }
             }
 
@@ -283,6 +301,12 @@ ShellRoot {
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 12; spacing: 6
                     Text { text: "Logboek"; color: "#9aa0b4"; font.pixelSize: 14; font.bold: true }
+                    // VERB-T1: vriendelijke lege-staat zolang er nog niets is geprobeerd.
+                    Text {
+                        visible: paneel.logregels.length === 0
+                        text: "Nog niets geprobeerd. Typ hierboven een opdracht om te beginnen."
+                        color: "#6b7080"; font.pixelSize: 13
+                    }
                     ListView {
                         Layout.fillWidth: true; Layout.fillHeight: true
                         clip: true
